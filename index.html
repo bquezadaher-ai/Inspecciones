@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Inspección Red Húmeda y Red Seca</title>
+  <title>Inspección RH/RS</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <style>
@@ -21,7 +21,7 @@
       font-weight: bold;
     }
 
-    main {
+    main, #login {
       padding: 15px;
       max-width: 700px;
       margin: auto;
@@ -52,7 +52,7 @@
     }
 
     textarea {
-      min-height: 100px;
+      min-height: 110px;
     }
 
     button {
@@ -88,6 +88,13 @@
       color: red;
       font-weight: bold;
     }
+
+    .info {
+      background: #eee;
+      padding: 10px;
+      border-radius: 6px;
+      margin-top: 10px;
+    }
   </style>
 </head>
 
@@ -97,17 +104,33 @@
   Inspección Red Húmeda / Red Seca
 </header>
 
-<main>
+<div id="login">
+  <div class="card">
+    <h3>Ingreso operador</h3>
+
+    <label>Usuario</label>
+    <input type="text" id="usuarioLogin" placeholder="Ej: bryan">
+
+    <label>Clave</label>
+    <input type="password" id="claveLogin" placeholder="Clave">
+
+    <button onclick="login()">Ingresar</button>
+
+    <p id="loginEstado"></p>
+  </div>
+</div>
+
+<main id="app" style="display:none;">
 
   <div class="card">
     <h3>Datos del operador</h3>
 
-    <label>Nombre operador</label>
-    <input type="text" id="operador" placeholder="Ej: Bryan Quezada">
+    <label>Operador</label>
+    <input type="text" id="operador" readonly>
 
     <label>Proyecto</label>
     <select id="proyecto" onchange="cargarPuntos()">
-      <option value="">Cargando proyectos...</option>
+      <option value="">Seleccione proyecto</option>
     </select>
   </div>
 
@@ -157,6 +180,7 @@
       <select id="operativo">
         <option>Operativo</option>
         <option>Operativo con observaciones</option>
+        <option>Parcialmente operativo</option>
         <option>Fuera de servicio</option>
       </select>
     </div>
@@ -165,14 +189,16 @@
     <select id="cumple">
       <option>Cumple</option>
       <option>No cumple</option>
+      <option>Observación</option>
+      <option>No aplica</option>
     </select>
 
     <label>Criticidad</label>
     <select id="criticidad">
-      <option>N/A</option>
       <option>Baja</option>
       <option>Media</option>
       <option>Alta</option>
+      <option>Crítica</option>
     </select>
 
     <label>Observación</label>
@@ -191,28 +217,58 @@
       <option>Accesibilidad</option>
     </select>
 
-    <label>Tomar fotografía</label>
-<input type="file" id="fotoCamara" accept="image/*" capture="environment" onchange="previsualizarFotos()">
+    <label>Tomar fotografía con cámara</label>
+    <input type="file" id="fotoCamara" accept="image/*" capture="environment" onchange="previsualizarFotos()">
 
-<label>Adjuntar desde galería</label>
-<input type="file" id="fotoGaleria" accept="image/*" multiple onchange="previsualizarFotos()">
+    <label>Adjuntar desde galería</label>
+    <input type="file" id="fotoGaleria" accept="image/*" multiple onchange="previsualizarFotos()">
+
     <div class="foto-preview" id="preview"></div>
   </div>
 
   <div class="card">
     <button id="btnGuardar" onclick="guardarInspeccion()">Guardar inspección</button>
+    <button type="button" onclick="limpiarFormulario()">Limpiar formulario</button>
     <p id="estado"></p>
   </div>
 
 </main>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbzyyWkJCsiDXXx-jZ0Ur4knZmROl3dCpBdIkRRM_wV_KbQ5qQIWDHNutJAW7f1gKUmJ1w/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbxIhydv9nctrRrI1wx2haj9635z2BALx57ug3zq04fPs1YNmhxd2v5Zip4J1KPTeBr9nA/exec";
 
 let proyectos = [];
 let puntos = [];
+let usuarioActual = null;
 
-window.onload = cargarProyectos;
+async function login() {
+  const usuario = document.getElementById("usuarioLogin").value.trim();
+  const clave = document.getElementById("claveLogin").value.trim();
+  const estado = document.getElementById("loginEstado");
+
+  if (!usuario || !clave) {
+    estado.innerHTML = "<span class='error'>Ingrese usuario y clave.</span>";
+    return;
+  }
+
+  try {
+    const res = await fetch(API_URL + "?op=login&usuario=" + encodeURIComponent(usuario) + "&clave=" + encodeURIComponent(clave));
+    const data = await res.json();
+
+    if (!data.ok) throw new Error(data.msg);
+
+    usuarioActual = data.usuario;
+
+    document.getElementById("login").style.display = "none";
+    document.getElementById("app").style.display = "block";
+    document.getElementById("operador").value = data.usuario.Nombre;
+
+    cargarProyectos();
+
+  } catch (err) {
+    estado.innerHTML = "<span class='error'>" + err.message + "</span>";
+  }
+}
 
 async function cargarProyectos() {
   const select = document.getElementById("proyecto");
@@ -259,7 +315,7 @@ async function cargarPuntos() {
     select.innerHTML = '<option value="">Seleccione punto</option>';
 
     puntos.forEach(p => {
-      select.innerHTML += `<option value="${p.ID}">${p.Codigo} - ${p.Torre} ${p.Piso}</option>`;
+      select.innerHTML += `<option value="${p.ID}">${p.Codigo} - ${p.Torre} - ${p.Piso} - ${p.Estado}</option>`;
     });
 
   } catch (err) {
@@ -278,21 +334,31 @@ function mostrarDatosPunto() {
   }
 
   document.getElementById("datosPunto").innerHTML = `
-    <p><strong>Torre:</strong> ${p.Torre}</p>
-    <p><strong>Zona:</strong> ${p.Zona}</p>
-    <p><strong>Piso:</strong> ${p.Piso}</p>
-    <p><strong>Sistema:</strong> ${p.Sistema}</p>
-    <p><strong>Código:</strong> ${p.Codigo}</p>
-    <p><strong>Descripción:</strong> ${p.Descripcion}</p>
+    <div class="info">
+      <p><strong>Torre:</strong> ${p.Torre}</p>
+      <p><strong>Zona:</strong> ${p.Zona}</p>
+      <p><strong>Piso:</strong> ${p.Piso}</p>
+      <p><strong>Sistema:</strong> ${p.Sistema}</p>
+      <p><strong>Código:</strong> ${p.Codigo}</p>
+      <p><strong>Descripción:</strong> ${p.Descripcion}</p>
+      <p><strong>Estado actual:</strong> ${p.Estado}</p>
+    </div>
   `;
 }
 
+function obtenerArchivosFotos() {
+  const camara = Array.from(document.getElementById("fotoCamara").files);
+  const galeria = Array.from(document.getElementById("fotoGaleria").files);
+  return camara.concat(galeria);
+}
+
 function previsualizarFotos() {
-  const files = document.getElementById("fotos").files;
+  const files = obtenerArchivosFotos();
   const preview = document.getElementById("preview");
+
   preview.innerHTML = "";
 
-  Array.from(files).forEach(file => {
+  files.forEach(file => {
     const img = document.createElement("img");
     img.src = URL.createObjectURL(file);
     preview.appendChild(img);
@@ -324,7 +390,7 @@ async function guardarInspeccion() {
   }
 
   const punto = puntos.find(x => String(x.ID) === String(puntoID));
-  const files = Array.from(document.getElementById("fotos").files);
+  const files = obtenerArchivosFotos();
 
   btn.disabled = true;
   btn.textContent = "Guardando...";
@@ -372,9 +438,8 @@ async function guardarInspeccion() {
 
     estado.innerHTML = `<span class="ok">Guardado correctamente. ID: ${data.inspeccionID}</span>`;
 
-    document.getElementById("observacion").value = "";
-    document.getElementById("fotos").value = "";
-    document.getElementById("preview").innerHTML = "";
+    limpiarFormularioSinPunto();
+    await cargarPuntos();
 
   } catch (err) {
     estado.innerHTML = `<span class="error">Error: ${err.message}</span>`;
@@ -382,6 +447,25 @@ async function guardarInspeccion() {
 
   btn.disabled = false;
   btn.textContent = "Guardar inspección";
+}
+
+function limpiarFormularioSinPunto() {
+  document.getElementById("observacion").value = "";
+  document.getElementById("fotoCamara").value = "";
+  document.getElementById("fotoGaleria").value = "";
+  document.getElementById("preview").innerHTML = "";
+
+  document.getElementById("accesible").value = "Sí";
+  document.getElementById("senalizacion").value = "Sí";
+  document.getElementById("danos").value = "No";
+  document.getElementById("operativo").value = "Operativo";
+  document.getElementById("cumple").value = "Cumple";
+  document.getElementById("criticidad").value = "Baja";
+}
+
+function limpiarFormulario() {
+  limpiarFormularioSinPunto();
+  document.getElementById("estado").innerHTML = "";
 }
 </script>
 
