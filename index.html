@@ -1,115 +1,110 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Inspección RH/RS</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    body{
-      font-family: Arial, sans-serif;
-      margin:0;
-      background:#f2f2f2;
-      color:#222;
-    }
+<title>Inspección RH/RS</title>
 
-    header{
-      background:#8b0000;
-      color:white;
-      padding:15px;
-      text-align:center;
-      font-weight:bold;
-      font-size:20px;
-    }
+<style>
 
-    main,#login{
-      padding:15px;
-      max-width:700px;
-      margin:auto;
-    }
+body{
+  font-family:Arial,sans-serif;
+  margin:0;
+  background:#f2f2f2;
+}
 
-    .card{
-      background:white;
-      padding:15px;
-      border-radius:10px;
-      margin-bottom:15px;
-      box-shadow:0 2px 6px rgba(0,0,0,0.15);
-    }
+header{
+  background:#8b0000;
+  color:white;
+  padding:15px;
+  text-align:center;
+  font-weight:bold;
+  font-size:20px;
+}
 
-    label{
-      font-weight:bold;
-      display:block;
-      margin-top:12px;
-    }
+main,#login{
+  max-width:800px;
+  margin:auto;
+  padding:15px;
+}
 
-    input,select,textarea,button{
-      width:100%;
-      padding:10px;
-      margin-top:6px;
-      border-radius:6px;
-      border:1px solid #ccc;
-      box-sizing:border-box;
-      font-size:15px;
-    }
+.card{
+  background:white;
+  padding:15px;
+  border-radius:10px;
+  margin-bottom:15px;
+  box-shadow:0 2px 6px rgba(0,0,0,0.15);
+}
 
-    textarea{
-      min-height:120px;
-    }
+label{
+  font-weight:bold;
+  display:block;
+  margin-top:12px;
+}
 
-    button{
-      background:#8b0000;
-      color:white;
-      border:none;
-      font-weight:bold;
-      margin-top:15px;
-      cursor:pointer;
-    }
+input,select,textarea,button{
+  width:100%;
+  padding:10px;
+  margin-top:6px;
+  border-radius:6px;
+  border:1px solid #ccc;
+  box-sizing:border-box;
+}
 
-    button:hover{
-      opacity:0.95;
-    }
+textarea{
+  min-height:120px;
+}
 
-    button:disabled{
-      background:#777;
-    }
+button{
+  background:#8b0000;
+  color:white;
+  border:none;
+  font-weight:bold;
+  cursor:pointer;
+}
 
-    .item{
-      border-bottom:1px solid #ddd;
-      padding:12px 0;
-    }
+button:hover{
+  opacity:0.95;
+}
 
-    .foto-preview img{
-      max-width:100px;
-      margin:5px;
-      border-radius:6px;
-      border:1px solid #ccc;
-    }
+.item{
+  border-bottom:1px solid #ddd;
+  padding:10px 0;
+}
 
-    .ok{
-      color:green;
-      font-weight:bold;
-    }
+.ok{
+  color:green;
+  font-weight:bold;
+}
 
-    .error{
-      color:red;
-      font-weight:bold;
-    }
+.error{
+  color:red;
+  font-weight:bold;
+}
 
-    .info{
-      background:#eee;
-      padding:10px;
-      border-radius:6px;
-      margin-top:10px;
-    }
+.info{
+  background:#eee;
+  padding:10px;
+  border-radius:6px;
+  margin-top:10px;
+}
 
-  </style>
+.foto-preview img{
+  max-width:100px;
+  margin:5px;
+  border-radius:6px;
+}
+
+</style>
+
 </head>
 
 <body>
 
 <header>
-  Inspección Red Húmeda / Red Seca
+Inspección Red Húmeda / Red Seca
 </header>
 
 <div id="login">
@@ -153,7 +148,7 @@
 
     <label>Proyecto</label>
 
-    <select id="proyecto" onchange="cargarPuntos()">
+    <select id="proyecto">
       <option value="">Seleccione proyecto</option>
     </select>
 
@@ -169,23 +164,65 @@
     <label>Dirección</label>
     <input type="text" id="adminDireccion">
 
-    <label>Cantidad torres</label>
-    <input type="number" id="adminTorres" value="1">
+    <label>Torres (una por línea)</label>
 
-    <label>Pisos por torre</label>
-    <input type="number" id="adminPisos" value="1">
+    <textarea id="adminTorresTexto"
+placeholder="Ejemplo:
 
-    <label>Gabinetes RH por piso</label>
-    <input type="number" id="adminRH" value="1">
-
-    <label>Salidas RS por piso</label>
-    <input type="number" id="adminRS" value="1">
+Torre Pacífico|18
+Torre Bahía|22
+Torre Mirador|12"></textarea>
 
     <button onclick="crearProyectoAutomatico()">
-      Crear proyecto automáticamente
+      Crear proyecto
     </button>
 
     <p id="adminEstado"></p>
+
+  </div>
+
+  <div class="card">
+
+    <h3>Agregar punto</h3>
+
+    <label>Torre</label>
+
+    <select id="torre">
+      <option value="">Seleccione torre</option>
+    </select>
+
+    <label>Sector</label>
+
+    <select id="sector">
+      <option>Ala Norte</option>
+      <option>Ala Sur</option>
+      <option>Central</option>
+      <option>Subterráneo</option>
+      <option>Azotea</option>
+    </select>
+
+    <label>Nivel</label>
+
+    <select id="nivel">
+      <option value="">Seleccione nivel</option>
+    </select>
+
+    <label>Sistema</label>
+
+    <select id="sistema">
+      <option>Red Húmeda</option>
+      <option>Red Seca</option>
+    </select>
+
+    <label>Descripción</label>
+
+    <input type="text" id="descripcionPunto">
+
+    <button onclick="agregarPunto()">
+      Agregar punto
+    </button>
+
+    <p id="estadoPunto"></p>
 
   </div>
 
@@ -196,7 +233,7 @@
     <label>Punto</label>
 
     <select id="punto" onchange="mostrarDatosPunto()">
-      <option value="">Seleccione proyecto primero</option>
+      <option value="">Seleccione punto</option>
     </select>
 
     <div id="datosPunto"></div>
@@ -255,10 +292,6 @@
       Guardar inspección
     </button>
 
-    <button onclick="limpiarFormulario()">
-      Limpiar formulario
-    </button>
-
     <p id="estado"></p>
 
   </div>
@@ -275,37 +308,15 @@ let puntos = [];
 let usuarioActual = null;
 
 const checklistRH = [
-
-  "¿Se cuenta con al menos 01 red húmeda por piso?",
-  "¿Se cuenta con coplas de 25 mm, 45 mm y/o 52 mm?",
-  "¿Las bocas de incendio poseen llave de salida de cierre rápido, válvula tipo bola o globo angular de 45°?",
-  "¿La manguera cuenta con su respectivo pitón?",
-  "¿Las mangueras son del tipo semirrígidas?",
-  "¿La red se encuentra conectada al sistema de distribución de agua del edificio?",
-  "Si la red está ubicada en espacios comunes, ¿el arranque y la manguera cuentan con nicho con puerta de vidrio?",
-  "¿Los gabinetes se encuentran despejados, con acceso expedito y con señalética?",
-  "¿El nicho se encuentra ubicado a una altura entre 0,6 m y 1,5 m sobre el nivel del piso?",
-  "Ante la prueba de apertura, ¿la red húmeda funciona adecuadamente?",
-  "¿Se aprecia estado general de la red húmeda en buenas condiciones? Ej: óxido, grietas, fisuras, fugas, etc."
-
+"¿Se cuenta con al menos 01 red húmeda por piso?",
+"¿La manguera cuenta con su respectivo pitón?",
+"¿Los gabinetes se encuentran despejados?"
 ];
 
 const checklistRS = [
-
-  "¿Se cuenta con red seca en el edificio?",
-  "¿La red seca posee conexión de alimentación exterior para Bomberos?",
-  "¿La conexión exterior es visible, accesible y está debidamente señalizada?",
-  "¿La conexión exterior cuenta con tapas y cadenas en buen estado?",
-  "¿La red seca posee válvulas de salida en cada piso?",
-  "¿Las válvulas de salida son del tipo globo angular 45° o equivalente?",
-  "¿Los diámetros de las salidas son compatibles con estándar Bomberos?",
-  "¿Las válvulas se encuentran en gabinetes o nichos protegidos y señalizados?",
-  "¿La red cuenta con sistema de drenaje o purga en su punto más bajo?",
-  "¿Las salidas están ubicadas en cajas de escala o zonas comunes seguras?",
-  "¿Las válvulas operan correctamente en apertura y cierre?",
-  "¿La red soporta presión de operación sin fugas, según prueba hidráulica?",
-  "¿Existe acceso adecuado para carros de Bomberos a la conexión exterior?"
-
+"¿Se cuenta con red seca?",
+"¿La conexión exterior es visible?",
+"¿Las válvulas operan correctamente?"
 ];
 
 function mostrarAdmin(){
@@ -332,15 +343,6 @@ async function login(){
   const estado =
     document.getElementById("loginEstado");
 
-  if(!usuario || !clave){
-
-    estado.innerHTML =
-      "<span class='error'>Ingrese usuario y clave.</span>";
-
-    return;
-
-  }
-
   try{
 
     const res = await fetch(
@@ -351,15 +353,19 @@ async function login(){
       encodeURIComponent(clave)
     );
 
-    const data = await res.json();
+    const data =
+      await res.json();
 
-    if(!data.ok) throw new Error(data.msg);
+    if(!data.ok)
+      throw new Error(data.msg);
 
     usuarioActual = data.usuario;
 
-    document.getElementById("login").style.display = "none";
+    document.getElementById("login").style.display =
+      "none";
 
-    document.getElementById("app").style.display = "block";
+    document.getElementById("app").style.display =
+      "block";
 
     document.getElementById("operador").value =
       data.usuario.Nombre;
@@ -376,7 +382,7 @@ async function login(){
   }catch(err){
 
     estado.innerHTML =
-      `<span class='error'>${err.message}</span>`;
+      `<span class="error">${err.message}</span>`;
 
   }
 
@@ -387,470 +393,124 @@ async function cargarProyectos(){
   const select =
     document.getElementById("proyecto");
 
-  try{
+  const res =
+    await fetch(API_URL + "?op=proyectos");
 
-    const res =
-      await fetch(API_URL + "?op=proyectos");
+  const data =
+    await res.json();
 
-    const data =
-      await res.json();
+  proyectos = data.proyectos;
 
-    proyectos = data.proyectos;
+  select.innerHTML =
+    '<option value="">Seleccione proyecto</option>';
 
-    select.innerHTML =
-      '<option value="">Seleccione proyecto</option>';
+  proyectos.forEach(p => {
 
-    proyectos.forEach(p => {
-
-      select.innerHTML += `
-        <option value="${p.ID}">
-          ${p.Nombre}
-        </option>
-      `;
-
-    });
-
-  }catch(err){
-
-    document.getElementById("estado").innerHTML =
-      `<span class="error">${err.message}</span>`;
-
-  }
-
-}
-
-async function cargarPuntos(){
-
-  const proyectoID =
-    document.getElementById("proyecto").value;
-
-  const select =
-    document.getElementById("punto");
-
-  if(!proyectoID){
-
-    select.innerHTML =
-      '<option value="">Seleccione proyecto primero</option>';
-
-    return;
-
-  }
-
-  try{
-
-    const res = await fetch(
-      API_URL +
-      "?op=puntos&proyectoID=" +
-      encodeURIComponent(proyectoID)
-    );
-
-    const data = await res.json();
-
-    puntos = data.puntos;
-
-    select.innerHTML =
-      '<option value="">Seleccione punto</option>';
-
-    puntos.forEach(p => {
-
-      select.innerHTML += `
-        <option value="${p.ID}">
-          ${p.Codigo} - ${p.Torre} - ${p.Piso}
-        </option>
-      `;
-
-    });
-
-  }catch(err){
-
-    document.getElementById("estado").innerHTML =
-      `<span class="error">${err.message}</span>`;
-
-  }
-
-}
-
-function mostrarDatosPunto(){
-
-  const puntoID =
-    document.getElementById("punto").value;
-
-  const p =
-    puntos.find(x => String(x.ID) === String(puntoID));
-
-  if(!p){
-
-    document.getElementById("datosPunto").innerHTML = "";
-
-    return;
-
-  }
-
-  document.getElementById("datosPunto").innerHTML = `
-    <div class="info">
-      <p><strong>Torre:</strong> ${p.Torre}</p>
-      <p><strong>Zona:</strong> ${p.Zona}</p>
-      <p><strong>Piso:</strong> ${p.Piso}</p>
-      <p><strong>Sistema:</strong> ${p.Sistema}</p>
-      <p><strong>Código:</strong> ${p.Codigo}</p>
-      <p><strong>Descripción:</strong> ${p.Descripcion}</p>
-      <p><strong>Estado:</strong> ${p.Estado}</p>
-    </div>
-  `;
-
-  generarChecklist(p.Sistema);
-
-}
-
-function generarChecklist(sistema){
-
-  const container =
-    document.getElementById("checklistContainer");
-
-  let lista = [];
-
-  if(sistema.toLowerCase().includes("húmeda")){
-    lista = checklistRH;
-  }else{
-    lista = checklistRS;
-  }
-
-  let html = "";
-
-  lista.forEach((pregunta, i) => {
-
-    html += `
-      <div class="item">
-
-        <label>${i + 1}. ${pregunta}</label>
-
-        <select id="pregunta_${i}">
-          <option>Sí</option>
-          <option>No</option>
-          <option>N/A</option>
-        </select>
-
-      </div>
+    select.innerHTML += `
+      <option value="${p.ID}">
+        ${p.Nombre}
+      </option>
     `;
 
   });
-
-  html += `
-
-    <label>Resultado general</label>
-
-    <select id="cumple">
-      <option>Cumple</option>
-      <option>No cumple</option>
-      <option>Observación</option>
-      <option>No aplica</option>
-    </select>
-
-    <label>Criticidad</label>
-
-    <select id="criticidad">
-      <option>Baja</option>
-      <option>Media</option>
-      <option>Alta</option>
-      <option>Crítica</option>
-    </select>
-
-    <label>Observación general</label>
-
-    <textarea id="observacion"></textarea>
-
-  `;
-
-  container.innerHTML = html;
-
-}
-
-function obtenerArchivosFotos(){
-
-  const camara =
-    Array.from(document.getElementById("fotoCamara").files);
-
-  const galeria =
-    Array.from(document.getElementById("fotoGaleria").files);
-
-  return camara.concat(galeria);
-
-}
-
-function previsualizarFotos(){
-
-  const files = obtenerArchivosFotos();
-
-  const preview =
-    document.getElementById("preview");
-
-  preview.innerHTML = "";
-
-  files.forEach(file => {
-
-    const img =
-      document.createElement("img");
-
-    img.src =
-      URL.createObjectURL(file);
-
-    preview.appendChild(img);
-
-  });
-
-}
-
-function archivoABase64(file){
-
-  return new Promise((resolve, reject) => {
-
-    const reader =
-      new FileReader();
-
-    reader.onload =
-      () => resolve(reader.result);
-
-    reader.onerror =
-      reject;
-
-    reader.readAsDataURL(file);
-
-  });
-
-}
-
-async function guardarInspeccion(){
-
-  const btn =
-    document.getElementById("btnGuardar");
-
-  const estado =
-    document.getElementById("estado");
-
-  const operador =
-    document.getElementById("operador").value.trim();
-
-  const proyectoID =
-    document.getElementById("proyecto").value;
-
-  const puntoID =
-    document.getElementById("punto").value;
-
-  if(!operador || !proyectoID || !puntoID){
-
-    estado.innerHTML =
-      '<span class="error">Complete operador, proyecto y punto.</span>';
-
-    return;
-
-  }
-
-  const punto =
-    puntos.find(x => String(x.ID) === String(puntoID));
-
-  const files =
-    obtenerArchivosFotos();
-
-  btn.disabled = true;
-
-  btn.textContent =
-    "Guardando...";
-
-  estado.innerHTML =
-    "Procesando fotografías...";
-
-  try{
-
-    const fotos = [];
-
-    for(const file of files){
-
-      const base64 =
-        await archivoABase64(file);
-
-      fotos.push({
-        nombre:file.name,
-        base64:base64,
-        tipoFoto:document.getElementById("tipoFoto").value
-      });
-
-    }
-
-    let checklistTexto = "";
-
-    const sistema =
-      punto.Sistema;
-
-    let lista = [];
-
-    if(sistema.toLowerCase().includes("húmeda")){
-      lista = checklistRH;
-    }else{
-      lista = checklistRS;
-    }
-
-    lista.forEach((pregunta, i) => {
-
-      const valor =
-        document.getElementById(`pregunta_${i}`).value;
-
-      checklistTexto +=
-        (i + 1) +
-        ". " +
-        pregunta +
-        " => " +
-        valor +
-        "\n";
-
-    });
-
-    checklistTexto +=
-      "\nObservación:\n" +
-      document.getElementById("observacion").value;
-
-    const payload = {
-
-      op:"guardarInspeccion",
-
-      proyectoID:proyectoID,
-      puntoID:puntoID,
-      operador:operador,
-      sistema:punto.Sistema,
-
-      cumple:
-        document.getElementById("cumple").value,
-
-      criticidad:
-        document.getElementById("criticidad").value,
-
-      observacion:checklistTexto,
-
-      estadoOperativo:"Operativo",
-
-      fotos:fotos
-
-    };
-
-    const res = await fetch(API_URL,{
-      method:"POST",
-      body:JSON.stringify(payload)
-    });
-
-    const data =
-      await res.json();
-
-    if(!data.ok)
-      throw new Error(data.msg);
-
-    estado.innerHTML =
-      `<span class="ok">
-        Inspección guardada correctamente.
-      </span>`;
-
-    limpiarFormulario();
-
-  }catch(err){
-
-    estado.innerHTML =
-      `<span class="error">${err.message}</span>`;
-
-  }
-
-  btn.disabled = false;
-
-  btn.textContent =
-    "Guardar inspección";
-
-}
-
-function limpiarFormulario(){
-
-  document.getElementById("observacion").value = "";
-
-  document.getElementById("fotoCamara").value = "";
-
-  document.getElementById("fotoGaleria").value = "";
-
-  document.getElementById("preview").innerHTML = "";
 
 }
 
 async function crearProyectoAutomatico(){
 
-  const estado =
-    document.getElementById("adminEstado");
+  const texto =
+    document.getElementById("adminTorresTexto").value;
 
   const nombre =
-    document.getElementById("adminNombreProyecto").value.trim();
+    document.getElementById("adminNombreProyecto").value;
 
   const direccion =
-    document.getElementById("adminDireccion").value.trim();
+    document.getElementById("adminDireccion").value;
 
-  const torres =
-    parseInt(document.getElementById("adminTorres").value);
+  const lineas =
+    texto.split("\n");
 
-  const pisos =
-    parseInt(document.getElementById("adminPisos").value);
+  const torres = [];
 
-  const rh =
-    parseInt(document.getElementById("adminRH").value);
+  lineas.forEach(l => {
 
-  const rs =
-    parseInt(document.getElementById("adminRS").value);
+    const partes = l.split("|");
 
-  if(!nombre){
+    if(partes.length >= 2){
 
-    estado.innerHTML =
-      "<span class='error'>Ingrese nombre proyecto.</span>";
+      torres.push({
+        nombre: partes[0].trim(),
+        pisos: parseInt(partes[1].trim())
+      });
 
-    return;
+    }
 
-  }
+  });
 
-  try{
+  const payload = {
 
-    estado.innerHTML =
-      "Creando proyecto...";
+    op:"crearProyectoAutomatico",
 
-    const payload = {
+    nombre:nombre,
+    direccion:direccion,
+    torres:torres
 
-      op:"crearProyectoAutomatico",
+  };
 
-      nombre:nombre,
-      direccion:direccion,
-      torres:torres,
-      pisos:pisos,
-      rh:rh,
-      rs:rs
+  const res = await fetch(API_URL,{
+    method:"POST",
+    body:JSON.stringify(payload)
+  });
 
-    };
+  const data =
+    await res.json();
 
-    const res = await fetch(API_URL,{
-      method:"POST",
-      body:JSON.stringify(payload)
-    });
+  document.getElementById("adminEstado").innerHTML =
+    `<span class="ok">Proyecto creado.</span>`;
 
-    const data =
-      await res.json();
+  cargarProyectos();
 
-    if(!data.ok)
-      throw new Error(data.msg);
+}
 
-    estado.innerHTML =
-      `<span class='ok'>
-        Proyecto creado correctamente.
-        Puntos generados:
-        ${data.puntos}
-      </span>`;
+async function agregarPunto(){
 
-    cargarProyectos();
+  const payload = {
 
-  }catch(err){
+    op:"agregarPunto",
 
-    estado.innerHTML =
-      `<span class='error'>${err.message}</span>`;
+    proyectoID:
+      document.getElementById("proyecto").value,
 
-  }
+    torre:
+      document.getElementById("torre").value,
+
+    sector:
+      document.getElementById("sector").value,
+
+    nivel:
+      document.getElementById("nivel").value,
+
+    sistema:
+      document.getElementById("sistema").value,
+
+    descripcion:
+      document.getElementById("descripcionPunto").value
+
+  };
+
+  const res = await fetch(API_URL,{
+    method:"POST",
+    body:JSON.stringify(payload)
+  });
+
+  const data =
+    await res.json();
+
+  document.getElementById("estadoPunto").innerHTML =
+    `<span class="ok">
+      Punto creado:
+      ${data.codigo}
+    </span>`;
 
 }
 
