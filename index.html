@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Inspección Red Húmeda y Red Seca</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: #f2f2f2;
+      color: #222;
+    }
+
+    header {
+      background: #8b0000;
+      color: white;
+      padding: 15px;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    main {
+      padding: 15px;
+      max-width: 700px;
+      margin: auto;
+    }
+
+    .card {
+      background: white;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 15px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    }
+
+    label {
+      font-weight: bold;
+      display: block;
+      margin-top: 12px;
+    }
+
+    input, select, textarea, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 6px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+      font-size: 15px;
+    }
+
+    textarea {
+      min-height: 100px;
+    }
+
+    button {
+      background: #8b0000;
+      color: white;
+      border: none;
+      font-weight: bold;
+      margin-top: 15px;
+    }
+
+    button:disabled {
+      background: #777;
+    }
+
+    .item {
+      border-bottom: 1px solid #ddd;
+      padding: 10px 0;
+    }
+
+    .foto-preview img {
+      max-width: 100px;
+      margin: 5px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    .ok {
+      color: green;
+      font-weight: bold;
+    }
+
+    .error {
+      color: red;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  Inspección Red Húmeda / Red Seca
+</header>
+
+<main>
+
+  <div class="card">
+    <h3>Datos del operador</h3>
+
+    <label>Nombre operador</label>
+    <input type="text" id="operador" placeholder="Ej: Bryan Quezada">
+
+    <label>Proyecto</label>
+    <select id="proyecto" onchange="cargarPuntos()">
+      <option value="">Cargando proyectos...</option>
+    </select>
+  </div>
+
+  <div class="card">
+    <h3>Punto a inspeccionar</h3>
+
+    <label>Punto</label>
+    <select id="punto" onchange="mostrarDatosPunto()">
+      <option value="">Seleccione proyecto primero</option>
+    </select>
+
+    <div id="datosPunto"></div>
+  </div>
+
+  <div class="card">
+    <h3>Checklist básico</h3>
+
+    <div class="item">
+      <label>¿El punto se encuentra accesible?</label>
+      <select id="accesible">
+        <option>Sí</option>
+        <option>No</option>
+        <option>N/A</option>
+      </select>
+    </div>
+
+    <div class="item">
+      <label>¿Cuenta con señalización visible?</label>
+      <select id="senalizacion">
+        <option>Sí</option>
+        <option>No</option>
+        <option>N/A</option>
+      </select>
+    </div>
+
+    <div class="item">
+      <label>¿Presenta daños visibles?</label>
+      <select id="danos">
+        <option>No</option>
+        <option>Sí</option>
+        <option>N/A</option>
+      </select>
+    </div>
+
+    <div class="item">
+      <label>¿Se encuentra operativo?</label>
+      <select id="operativo">
+        <option>Operativo</option>
+        <option>Operativo con observaciones</option>
+        <option>Fuera de servicio</option>
+      </select>
+    </div>
+
+    <label>Resultado general</label>
+    <select id="cumple">
+      <option>Cumple</option>
+      <option>No cumple</option>
+    </select>
+
+    <label>Criticidad</label>
+    <select id="criticidad">
+      <option>N/A</option>
+      <option>Baja</option>
+      <option>Media</option>
+      <option>Alta</option>
+    </select>
+
+    <label>Observación</label>
+    <textarea id="observacion" placeholder="Describa hallazgos, daños, obstrucciones, falta de señalética, etc."></textarea>
+  </div>
+
+  <div class="card">
+    <h3>Evidencia fotográfica</h3>
+
+    <label>Tipo de fotografía</label>
+    <select id="tipoFoto">
+      <option>General</option>
+      <option>Detalle</option>
+      <option>Incumplimiento</option>
+      <option>Señalización</option>
+      <option>Accesibilidad</option>
+    </select>
+
+    <label>Tomar o adjuntar fotografías</label>
+    <input type="file" id="fotos" accept="image/*" capture="environment" multiple onchange="previsualizarFotos()">
+
+    <div class="foto-preview" id="preview"></div>
+  </div>
+
+  <div class="card">
+    <button id="btnGuardar" onclick="guardarInspeccion()">Guardar inspección</button>
+    <p id="estado"></p>
+  </div>
+
+</main>
+
+<script>
+const API_URL = "https://script.google.com/macros/s/AKfycbzyyWkJCsiDXXx-jZ0Ur4knZmROl3dCpBdIkRRM_wV_KbQ5qQIWDHNutJAW7f1gKUmJ1w/exec";
+
+let proyectos = [];
+let puntos = [];
+
+window.onload = cargarProyectos;
+
+async function cargarProyectos() {
+  const select = document.getElementById("proyecto");
+
+  try {
+    const res = await fetch(API_URL + "?op=proyectos");
+    const data = await res.json();
+
+    if (!data.ok) throw new Error(data.msg);
+
+    proyectos = data.proyectos;
+
+    select.innerHTML = '<option value="">Seleccione proyecto</option>';
+
+    proyectos.forEach(p => {
+      select.innerHTML += `<option value="${p.ID}">${p.Nombre}</option>`;
+    });
+
+  } catch (err) {
+    select.innerHTML = '<option value="">Error al cargar</option>';
+    document.getElementById("estado").innerHTML = `<span class="error">${err.message}</span>`;
+  }
+}
+
+async function cargarPuntos() {
+  const proyectoID = document.getElementById("proyecto").value;
+  const select = document.getElementById("punto");
+
+  if (!proyectoID) {
+    select.innerHTML = '<option value="">Seleccione proyecto primero</option>';
+    return;
+  }
+
+  select.innerHTML = '<option value="">Cargando puntos...</option>';
+
+  try {
+    const res = await fetch(API_URL + "?op=puntos&proyectoID=" + encodeURIComponent(proyectoID));
+    const data = await res.json();
+
+    if (!data.ok) throw new Error(data.msg);
+
+    puntos = data.puntos;
+
+    select.innerHTML = '<option value="">Seleccione punto</option>';
+
+    puntos.forEach(p => {
+      select.innerHTML += `<option value="${p.ID}">${p.Codigo} - ${p.Torre} ${p.Piso}</option>`;
+    });
+
+  } catch (err) {
+    select.innerHTML = '<option value="">Error al cargar puntos</option>';
+    document.getElementById("estado").innerHTML = `<span class="error">${err.message}</span>`;
+  }
+}
+
+function mostrarDatosPunto() {
+  const puntoID = document.getElementById("punto").value;
+  const p = puntos.find(x => String(x.ID) === String(puntoID));
+
+  if (!p) {
+    document.getElementById("datosPunto").innerHTML = "";
+    return;
+  }
+
+  document.getElementById("datosPunto").innerHTML = `
+    <p><strong>Torre:</strong> ${p.Torre}</p>
+    <p><strong>Zona:</strong> ${p.Zona}</p>
+    <p><strong>Piso:</strong> ${p.Piso}</p>
+    <p><strong>Sistema:</strong> ${p.Sistema}</p>
+    <p><strong>Código:</strong> ${p.Codigo}</p>
+    <p><strong>Descripción:</strong> ${p.Descripcion}</p>
+  `;
+}
+
+function previsualizarFotos() {
+  const files = document.getElementById("fotos").files;
+  const preview = document.getElementById("preview");
+  preview.innerHTML = "";
+
+  Array.from(files).forEach(file => {
+    const img = document.createElement("img");
+    img.src = URL.createObjectURL(file);
+    preview.appendChild(img);
+  });
+}
+
+function archivoABase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+
+    reader.readAsDataURL(file);
+  });
+}
+
+async function guardarInspeccion() {
+  const btn = document.getElementById("btnGuardar");
+  const estado = document.getElementById("estado");
+
+  const operador = document.getElementById("operador").value.trim();
+  const proyectoID = document.getElementById("proyecto").value;
+  const puntoID = document.getElementById("punto").value;
+
+  if (!operador || !proyectoID || !puntoID) {
+    estado.innerHTML = '<span class="error">Complete operador, proyecto y punto.</span>';
+    return;
+  }
+
+  const punto = puntos.find(x => String(x.ID) === String(puntoID));
+  const files = Array.from(document.getElementById("fotos").files);
+
+  btn.disabled = true;
+  btn.textContent = "Guardando...";
+  estado.innerHTML = "Procesando fotos y guardando inspección...";
+
+  try {
+    const fotos = [];
+
+    for (const file of files) {
+      const base64 = await archivoABase64(file);
+      fotos.push({
+        nombre: file.name,
+        base64: base64,
+        tipoFoto: document.getElementById("tipoFoto").value
+      });
+    }
+
+    const observacionFinal =
+      "Accesible: " + document.getElementById("accesible").value + "\n" +
+      "Señalización: " + document.getElementById("senalizacion").value + "\n" +
+      "Daños visibles: " + document.getElementById("danos").value + "\n\n" +
+      document.getElementById("observacion").value;
+
+    const payload = {
+      op: "guardarInspeccion",
+      proyectoID: proyectoID,
+      puntoID: puntoID,
+      operador: operador,
+      sistema: punto.Sistema,
+      cumple: document.getElementById("cumple").value,
+      criticidad: document.getElementById("criticidad").value,
+      observacion: observacionFinal,
+      estadoOperativo: document.getElementById("operativo").value,
+      fotos: fotos
+    };
+
+    const res = await fetch(API_URL, {
+      method: "POST",
+      body: JSON.stringify(payload)
+    });
+
+    const data = await res.json();
+
+    if (!data.ok) throw new Error(data.msg);
+
+    estado.innerHTML = `<span class="ok">Guardado correctamente. ID: ${data.inspeccionID}</span>`;
+
+    document.getElementById("observacion").value = "";
+    document.getElementById("fotos").value = "";
+    document.getElementById("preview").innerHTML = "";
+
+  } catch (err) {
+    estado.innerHTML = `<span class="error">Error: ${err.message}</span>`;
+  }
+
+  btn.disabled = false;
+  btn.textContent = "Guardar inspección";
+}
+</script>
+
+</body>
+</html>
