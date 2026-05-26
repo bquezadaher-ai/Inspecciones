@@ -191,9 +191,11 @@
       <option>Accesibilidad</option>
     </select>
 
-    <label>Tomar o adjuntar fotografías</label>
-    <input type="file" id="fotos" accept="image/*" capture="environment" onchange="previsualizarFotos()">
+    <label>Tomar fotografía</label>
+<input type="file" id="fotoCamara" accept="image/*" capture="environment" onchange="previsualizarFotos()">
 
+<label>Adjuntar desde galería</label>
+<input type="file" id="fotoGaleria" accept="image/*" multiple onchange="previsualizarFotos()">
     <div class="foto-preview" id="preview"></div>
   </div>
 
