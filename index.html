@@ -157,7 +157,7 @@ Torre Mirador|12"></textarea>
 </main>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbwlYjGudaNy3ZDOEdmq9qv9mCgr7IARqMIgmONrwgmv3fGZJ_5uHU8NV-pfjFGQQCNa/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycby8hAIH90TZu3AAdivStia5vOOfUjzgYx0q0_es3QaBnDIInSY_reiDzdp_ZSo3dU70sA/exec";
 
 let proyectos = [];
 let puntos = [];
@@ -530,7 +530,82 @@ async function guardarInspeccion(){
   btn.disabled = false;
   btn.textContent = "Guardar inspección";
 }
+function convertirChecklistATabla(texto){
 
+  const lineas = texto.split("\n");
+
+  let html = `
+    <table>
+      <tr>
+        <th>N°</th>
+        <th>Ítem</th>
+        <th>Resultado</th>
+      </tr>
+  `;
+
+  let observacion = "";
+  let leyendoObs = false;
+
+  lineas.forEach(linea => {
+
+    if(linea.startsWith("Observación:")){
+
+      leyendoObs = true;
+
+      return;
+    }
+
+    if(leyendoObs){
+
+      observacion += linea + "<br>";
+
+      return;
+    }
+
+    if(linea.includes("=>")){
+
+      const partes =
+        linea.split("=>");
+
+      const izquierda =
+        partes[0].trim();
+
+      const resultado =
+        partes[1].trim();
+
+      const numero =
+        izquierda.split(".")[0];
+
+      const item =
+        izquierda.substring(
+          izquierda.indexOf(".") + 1
+        ).trim();
+
+      html += `
+        <tr>
+          <td>${numero}</td>
+          <td>${item}</td>
+          <td>${resultado}</td>
+        </tr>
+      `;
+    }
+
+  });
+
+  html += `</table>`;
+
+  if(observacion.trim() !== ""){
+
+    html += `
+      <h4>Observación general</h4>
+
+      <p>${observacion}</p>
+    `;
+  }
+
+  return html;
+
+}
 async function generarInformeTorre(){
   const proyectoID = document.getElementById("proyecto").value;
   const torre = document.getElementById("torre").value;
@@ -638,7 +713,7 @@ async function generarInformeTorre(){
             <p><strong>Criticidad:</strong> ${r.inspeccion.Criticidad || ""}</p>
 
             <h4>Checklist / Observaciones</h4>
-            <pre>${r.inspeccion.Observacion || ""}</pre>
+${convertirChecklistATabla(r.inspeccion.Observacion || "")}
 
             <h4>Fotografías</h4>
         `;
