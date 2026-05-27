@@ -1153,6 +1153,125 @@ if(!ventana){
 ventana.document.open();
 ventana.document.write(html);
 ventana.document.close();
+
+  async function agregarPunto(){
+
+  const proyectoID =
+    document.getElementById(
+      "proyecto"
+    ).value;
+
+  const torre =
+    document.getElementById(
+      "torre"
+    ).value;
+
+  const sector =
+    document.getElementById(
+      "sector"
+    ).value;
+
+  const nivel =
+    document.getElementById(
+      "nivel"
+    ).value;
+
+  const sistema =
+    document.getElementById(
+      "sistema"
+    ).value;
+
+  const descripcion =
+    document.getElementById(
+      "descripcionPunto"
+    ).value;
+
+  const estado =
+    document.getElementById(
+      "estadoPunto"
+    );
+
+  if(
+    !proyectoID
+    ||
+    !torre
+    ||
+    !nivel
+  ){
+
+    estado.innerHTML =
+
+      `<span class="error">
+        Seleccione proyecto, torre y nivel.
+      </span>`;
+
+    return;
+
+  }
+
+  try{
+
+    const payload = {
+
+      op:"agregarPunto",
+
+      proyectoID,
+      torre,
+      sector,
+      nivel,
+      sistema,
+      descripcion
+
+    };
+
+    const res =
+      await fetch(API_URL,{
+
+        method:"POST",
+
+        body:JSON.stringify(
+          payload
+        )
+
+      });
+
+    const data =
+      await res.json();
+
+    if(data.ok){
+
+      estado.innerHTML =
+
+        `<span class="ok">
+          Punto creado:
+          ${data.codigo}
+        </span>`;
+
+      document.getElementById(
+        "descripcionPunto"
+      ).value = "";
+
+      cargarPuntos();
+
+    }else{
+
+      throw new Error(
+        data.msg
+      );
+
+    }
+
+  }catch(err){
+
+    estado.innerHTML =
+
+      `<span class="error">
+        ${err.message}
+      </span>`;
+
+  }
+
+}
 }
 </script>
 </body>
