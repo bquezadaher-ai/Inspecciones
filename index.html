@@ -143,26 +143,8 @@ Torre Mirador|12"></textarea>
   <div class="card">
     <h3>Evidencia fotográfica</h3>
 
-    <div class="card">
-    <h3>Evidencia fotográfica</h3>
-
-    <label>Tipo fotografía</label>
-    <select id="tipoFoto">
-      <option>General</option>
-      <option>Detalle</option>
-      <option>Incumplimiento</option>
-      <option>Señalización</option>
-      <option>Accesibilidad</option>
-    </select>
-
-    <label>Tomar fotografía</label>
-    <input type="file" id="fotoCamara" accept="image/*" capture="environment" onchange="previsualizarFotos()">
-
-    <label>Adjuntar desde galería</label>
+    <label>Adjuntar fotografías</label>
     <input type="file" id="fotoGaleria" accept="image/*" multiple onchange="previsualizarFotos()">
-
-    <div class="foto-preview" id="preview"></div>
-  </div>
 
     <div class="foto-preview" id="preview"></div>
   </div>
@@ -417,9 +399,7 @@ function mostrarRecordatorio(sistema){
 }
 
 function obtenerArchivosFotos(){
-  const camara = Array.from(document.getElementById("fotoCamara").files);
-  const galeria = Array.from(document.getElementById("fotoGaleria").files);
-  return camara.concat(galeria);
+  return Array.from(document.getElementById("fotoGaleria").files);
 }
 
 function previsualizarFotos(){
@@ -464,8 +444,7 @@ async function guardarInspeccion(){
     for(const file of obtenerArchivosFotos()){
       fotos.push({
         nombre: file.name,
-        base64: await archivoABase64(file),
-        tipoFoto: document.getElementById("tipoFoto").value
+        base64: await archivoABase64(file)
       });
     }
 
@@ -480,7 +459,7 @@ async function guardarInspeccion(){
       operador: document.getElementById("operador").value,
       sistema: punto.Sistema,
       cumple: document.getElementById("cumple").value,
-      criticidad: document.getElementById("criticidad").value,
+      criticidad: "",
       observacion: observacionTexto,
       estadoOperativo: document.getElementById("cumple").value,
       fotos
@@ -495,7 +474,6 @@ async function guardarInspeccion(){
 
     if(data.ok){
       estado.innerHTML = `<span class="ok">Inspección guardada correctamente.</span>`;
-      document.getElementById("fotoCamara").value = "";
       document.getElementById("fotoGaleria").value = "";
       document.getElementById("preview").innerHTML = "";
       document.getElementById("observacion").value = "";
@@ -580,13 +558,13 @@ async function generarInformeTorre(){
   <table>
     <tr>
       <th>Total inspecciones</th>
-      <th>No conformes</th>
-      <th>Críticas</th>
+      <th>Realizadas</th>
+      <th>No realizadas</th>
     </tr>
     <tr>
       <td>${registros.length}</td>
-      <td>${registros.filter(r => r.inspeccion.Cumple === "No conforme").length}</td>
-      <td>${registros.filter(r => r.inspeccion.Cumple === "Crítico" || r.inspeccion.Criticidad === "Crítica").length}</td>
+      <td>${registros.filter(r => r.inspeccion.Cumple === "Se realiza inspeccion").length}</td>
+      <td>${registros.filter(r => r.inspeccion.Cumple === "No se realiza inspeccion").length}</td>
     </tr>
   </table>
   `;
@@ -616,7 +594,6 @@ async function generarInformeTorre(){
             <p><strong>Sistema:</strong> ${r.punto.Sistema || ""}</p>
             <p><strong>Descripción:</strong> ${r.punto.Descripcion || ""}</p>
             <p><strong>Resultado:</strong> ${r.inspeccion.Cumple || ""}</p>
-            <p><strong>Criticidad:</strong> ${r.inspeccion.Criticidad || ""}</p>
 
             <h4>Observaciones</h4>
             <pre>${r.inspeccion.Observacion || ""}</pre>
@@ -631,7 +608,6 @@ async function generarInformeTorre(){
         (r.fotos || []).forEach(f => {
           html += `
             <div>
-              <p><strong>${f.TipoFoto || "Foto"}</strong></p>
               <img class="foto" src="${f.Base64 || f.URL}">
             </div>
           `;
