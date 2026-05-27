@@ -153,18 +153,6 @@ Torre Mirador|12"></textarea>
   <div class="card">
     <h3>Evidencia fotográfica</h3>
 
-    <label>Tipo fotografía</label>
-    <select id="tipoFoto">
-      <option>General</option>
-      <option>Detalle</option>
-      <option>Incumplimiento</option>
-      <option>Señalización</option>
-      <option>Accesibilidad</option>
-    </select>
-
-    <label>Tomar fotografía</label>
-    <input type="file" id="fotoCamara" accept="image/*" capture="environment" onchange="previsualizarFotos()">
-
     <label>Adjuntar desde galería</label>
     <input type="file" id="fotoGaleria" accept="image/*" multiple onchange="previsualizarFotos()">
 
@@ -179,7 +167,7 @@ Torre Mirador|12"></textarea>
 </main>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbytwovmrzY_xBQtKomuYJBFougHjtDh4-xRpy2CgrQMuxMUWlyvBDZesou-Y40Q7Fbo_g/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbyNGXN34OO92XaadQADcaYa7qRF5oBFhWCAWNzrbYEeENRRuYI0Q4HfxdmDSdBjNKpaJw/exec";
 
 let proyectos = [];
 let puntos = [];
@@ -393,15 +381,13 @@ function mostrarRecordatorio(sistema){
         <span class="tag">Gabinete</span>
         <span class="tag">Manguera</span>
         <span class="tag">Pitón</span>
-        <span class="tag">Válvula</span>
+        <span class="tag">Llave de paso</span>
         <span class="tag">Señalética</span>
         <span class="tag">Acceso expedito</span>
         <span class="tag">Fugas</span>
         <span class="tag">Corrosión</span>
         <span class="tag">Presión</span>
-        <span class="tag">Nicho / puerta</span>
-        <span class="tag">Altura normativa</span>
-        <span class="tag">Estado general</span>
+        <span class="tag">Puerta</span>
       </div>
     `;
   }else{
@@ -410,14 +396,13 @@ function mostrarRecordatorio(sistema){
         <h4>Red Seca - Revisar</h4>
         <span class="tag">Conexión Bomberos</span>
         <span class="tag">Tapas y cadenas</span>
-        <span class="tag">Válvulas</span>
+        <span class="tag">Llaves de paso</span>
         <span class="tag">Señalética</span>
         <span class="tag">Accesibilidad</span>
         <span class="tag">Fugas</span>
         <span class="tag">Corrosión</span>
-        <span class="tag">Drenaje / purga</span>
-        <span class="tag">Compatibilidad conexiones</span>
-        <span class="tag">Estado general</span>
+        <span class="tag">Purga</span>
+        <span class="tag">Presión</span>
       </div>
     `;
   }
