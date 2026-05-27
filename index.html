@@ -143,8 +143,26 @@ Torre Mirador|12"></textarea>
   <div class="card">
     <h3>Evidencia fotográfica</h3>
 
+    <div class="card">
+    <h3>Evidencia fotográfica</h3>
+
+    <label>Tipo fotografía</label>
+    <select id="tipoFoto">
+      <option>General</option>
+      <option>Detalle</option>
+      <option>Incumplimiento</option>
+      <option>Señalización</option>
+      <option>Accesibilidad</option>
+    </select>
+
+    <label>Tomar fotografía</label>
+    <input type="file" id="fotoCamara" accept="image/*" capture="environment" onchange="previsualizarFotos()">
+
     <label>Adjuntar desde galería</label>
     <input type="file" id="fotoGaleria" accept="image/*" multiple onchange="previsualizarFotos()">
+
+    <div class="foto-preview" id="preview"></div>
+  </div>
 
     <div class="foto-preview" id="preview"></div>
   </div>
