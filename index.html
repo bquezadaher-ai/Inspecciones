@@ -1000,7 +1000,153 @@ async function guardarInspeccion(){
     "Guardar inspección";
 
 }
+async function generarInformeTorre(){
+  const proyectoID = document.getElementById("proyecto").value;
+  const torre = document.getElementById("torre").value;
 
+  if(!proyectoID || !torre){
+    alert("Seleccione proyecto y torre.");
+    return;
+  }
+
+  const res = await fetch(
+    API_URL +
+    "?op=informeTorre&proyectoID=" + encodeURIComponent(proyectoID) +
+    "&torre=" + encodeURIComponent(torre)
+  );
+
+  const data = await res.json();
+
+  if(!data.ok){
+    alert(data.msg || "Error al generar informe.");
+    return;
+  }
+
+  const proyecto = data.proyecto || {};
+  const registros = data.registros || [];
+
+  let html = `
+  <html>
+  <head>
+    <title>Informe ${torre}</title>
+    <style>
+      body{font-family:Arial,sans-serif;margin:30px;color:#222}
+      h1,h2,h3,h4{color:#8b0000}
+      .portada{border:2px solid #8b0000;padding:20px;margin-bottom:25px}
+      .sector{margin-top:40px}
+      .nivel{margin-top:25px;padding:10px;background:#eee}
+      .registro{border:1px solid #aaa;padding:15px;margin-top:15px;page-break-inside:avoid}
+      .foto{max-width:230px;margin:8px;border:1px solid #999}
+      pre{white-space:pre-wrap;font-family:Arial,sans-serif}
+      table{width:100%;border-collapse:collapse;margin-top:15px}
+      td,th{border:1px solid #999;padding:8px}
+      .firmas{margin-top:80px;display:flex;justify-content:space-between;gap:20px}
+      .firma{width:32%;text-align:center;border-top:1px solid #000;padding-top:8px}
+      @media print{button{display:none}}
+    </style>
+  </head>
+  <body>
+
+  <button onclick="window.print()">Imprimir / Guardar PDF</button>
+
+  <div class="portada">
+    <h1>Informe Inspección Red Húmeda / Red Seca</h1>
+    <p><strong>Proyecto:</strong> ${proyecto.Nombre || ""}</p>
+    <p><strong>Dirección:</strong> ${proyecto.Direccion || proyecto.Dirección || ""}</p>
+    <p><strong>Torre:</strong> ${torre}</p>
+    <p><strong>Fecha emisión:</strong> ${new Date().toLocaleString()}</p>
+
+    <h3>Normativa aplicada</h3>
+    <p>
+      Ley 16.744, DS 50 - RIDAA, DS 594, DS 44,
+      Circular 339 DDU MINVU, OGUC, NCh 1410,
+      NCh 1411/2/4, NCh 2111, NFPA 14, NFPA 15.
+    </p>
+  </div>
+
+  <h2>Resumen de la torre</h2>
+  <table>
+    <tr>
+      <th>Total inspecciones</th>
+      <th>Realizadas</th>
+      <th>No realizadas</th>
+    </tr>
+    <tr>
+      <td>${registros.length}</td>
+      <td>${registros.filter(r => r.inspeccion.Cumple === "Se realiza inspeccion").length}</td>
+      <td>${registros.filter(r => r.inspeccion.Cumple === "No se realiza inspeccion").length}</td>
+    </tr>
+  </table>
+  `;
+
+  const sectores = {};
+
+  registros.forEach(r => {
+    const sector = r.punto.Sector || "Sin sector";
+    const nivel = r.punto.Nivel || "Sin nivel";
+
+    if(!sectores[sector]) sectores[sector] = {};
+    if(!sectores[sector][nivel]) sectores[sector][nivel] = [];
+
+    sectores[sector][nivel].push(r);
+  });
+
+  Object.keys(sectores).forEach(sector => {
+    html += `<div class="sector"><h2>${sector}</h2>`;
+
+    Object.keys(sectores[sector]).forEach(nivel => {
+      html += `<div class="nivel"><h3>${nivel}</h3>`;
+
+      sectores[sector][nivel].forEach(r => {
+        html += `
+          <div class="registro">
+            <h4>${r.punto.Codigo || ""}</h4>
+            <p><strong>Sistema:</strong> ${r.punto.Sistema || ""}</p>
+            <p><strong>Descripción:</strong> ${r.punto.Descripcion || ""}</p>
+            <p><strong>Resultado:</strong> ${r.inspeccion.Cumple || ""}</p>
+
+            <h4>Observaciones</h4>
+            <pre>${r.inspeccion.Observacion || ""}</pre>
+
+            <h4>Fotografías</h4>
+        `;
+
+        if(!r.fotos || r.fotos.length === 0){
+          html += `<p>Sin fotografías adjuntas.</p>`;
+        }
+
+        (r.fotos || []).forEach(f => {
+          html += `
+            <div>
+              <img class="foto" src="${f.Base64 || f.URL}">
+            </div>
+          `;
+        });
+
+        html += `</div>`;
+      });
+
+      html += `</div>`;
+    });
+
+    html += `</div>`;
+  });
+
+  html += `
+    <div class="firmas">
+      <div class="firma">Elaborado por<br>Firma y timbre</div>
+      <div class="firma">Revisado por<br>Firma y timbre</div>
+      <div class="firma">Recepción edificio<br>Firma y timbre</div>
+    </div>
+
+  </body>
+  </html>
+  `;
+
+  const ventana = window.open("", "_blank");
+  ventana.document.write(html);
+  ventana.document.close();
+}
 </script>
 </body>
 </html>
