@@ -424,15 +424,168 @@ function archivoABase64(file){
 }
 
 async function guardarInspeccion(){
-  const puntoID = document.getElementById("punto").value;
-  const punto = puntos.find(x => String(x.ID) === String(puntoID));
-  const estado = document.getElementById("estado");
-  const btn = document.getElementById("btnGuardar");
+
+  const puntoID =
+    document.getElementById("punto").value;
+
+  const punto =
+    puntos.find(
+      x => String(x.ID) === String(puntoID)
+    );
+
+  const estado =
+    document.getElementById("estado");
+
+  const btn =
+    document.getElementById("btnGuardar");
 
   if(!punto){
-    estado.innerHTML = `<span class="error">Seleccione un punto.</span>`;
+
+    estado.innerHTML =
+      `<span class="error">
+        Seleccione un punto.
+      </span>`;
+
     return;
+
   }
+
+  btn.disabled = true;
+
+  btn.textContent =
+    "Guardando...";
+
+  estado.innerHTML =
+    "Procesando fotografías...";
+
+  try{
+
+    const fotos = [];
+
+    for(
+      const file of obtenerArchivosFotos()
+    ){
+
+      fotos.push({
+
+        nombre:file.name,
+
+        base64:
+          await archivoABase64(file)
+
+      });
+
+    }
+
+    const observacionTexto =
+
+      "Observación:\n"
+      +
+      document.getElementById(
+        "observacion"
+      ).value;
+
+    const payload = {
+
+      op:"guardarInspeccion",
+
+      proyectoID:
+        document.getElementById(
+          "proyecto"
+        ).value,
+
+      puntoID,
+
+      operador:
+        document.getElementById(
+          "operador"
+        ).value,
+
+      sistema:
+        punto.Sistema,
+
+      cumple:
+        document.getElementById(
+          "cumple"
+        ).value,
+
+      criticidad:"",
+
+      observacion:
+        observacionTexto,
+
+      estadoOperativo:
+        document.getElementById(
+          "cumple"
+        ).value,
+
+      fotos
+
+    };
+
+    const res =
+      await fetch(API_URL,{
+
+        method:"POST",
+
+        body:JSON.stringify(
+          payload
+        )
+
+      });
+
+    const data =
+      await res.json();
+
+    if(data.ok){
+
+      estado.innerHTML =
+
+        `<span class="ok">
+          Inspección guardada correctamente.
+        </span>`;
+
+      document.getElementById(
+        "fotoGaleria"
+      ).value = "";
+
+      document.getElementById(
+        "preview"
+      ).innerHTML = "";
+
+      document.getElementById(
+        "observacion"
+      ).value = "";
+
+      cargarPuntos();
+
+    }else{
+
+      throw new Error(
+
+        data.msg ||
+        "Error al guardar inspección."
+
+      );
+
+    }
+
+  }catch(err){
+
+    estado.innerHTML =
+
+      `<span class="error">
+        ${err.message}
+      </span>`;
+
+  }
+
+  btn.disabled = false;
+
+  btn.textContent =
+    "Guardar inspección";
+
+}
 
   btn.disabled = true;
   btn.textContent = "Guardando...";
