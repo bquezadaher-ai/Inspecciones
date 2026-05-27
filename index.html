@@ -6,121 +6,30 @@
 <title>Inspección RH/RS</title>
 
 <style>
-
-body{
-  font-family:Arial,sans-serif;
-  margin:0;
-  background:#f2f2f2;
-}
-
-header{
-  background:#8b0000;
-  color:white;
-  padding:15px;
-  text-align:center;
-  font-size:20px;
-  font-weight:bold;
-}
-
-main,#login{
-  max-width:900px;
-  margin:auto;
-  padding:15px;
-}
-
-.card{
-  background:white;
-  padding:15px;
-  border-radius:10px;
-  margin-bottom:15px;
-  box-shadow:0 2px 6px rgba(0,0,0,.15);
-}
-
-label{
-  display:block;
-  margin-top:12px;
-  font-weight:bold;
-}
-
-input,select,textarea,button{
-  width:100%;
-  padding:10px;
-  margin-top:5px;
-  border-radius:6px;
-  border:1px solid #ccc;
-  box-sizing:border-box;
-}
-
-textarea{
-  min-height:120px;
-}
-
-button{
-  background:#8b0000;
-  color:white;
-  border:none;
-  font-weight:bold;
-  cursor:pointer;
-}
-
-button:hover{
-  opacity:.9;
-}
-
-.ok{
-  color:green;
-  font-weight:bold;
-}
-
-.error{
-  color:red;
-  font-weight:bold;
-}
-
-.info{
-  background:#eee;
-  padding:10px;
-  border-radius:6px;
-  margin-top:10px;
-}
-
-.foto-preview{
-  display:flex;
-  flex-wrap:wrap;
-}
-
-.foto-preview img{
-  width:110px;
-  height:110px;
-  object-fit:cover;
-  margin:5px;
-  border-radius:8px;
-  border:1px solid #ccc;
-}
-
-.tag{
-  display:inline-block;
-  padding:6px 10px;
-  margin:4px;
-  border-radius:20px;
-  background:#f2f2f2;
-  border:1px solid #ccc;
-  font-size:14px;
-}
-
+body{font-family:Arial,sans-serif;margin:0;background:#f2f2f2}
+header{background:#8b0000;color:white;padding:15px;text-align:center;font-size:20px;font-weight:bold}
+main,#login{max-width:900px;margin:auto;padding:15px}
+.card{background:white;padding:15px;border-radius:10px;margin-bottom:15px;box-shadow:0 2px 6px rgba(0,0,0,.15)}
+label{display:block;margin-top:12px;font-weight:bold}
+input,select,textarea,button{width:100%;padding:10px;margin-top:5px;border-radius:6px;border:1px solid #ccc;box-sizing:border-box}
+textarea{min-height:120px}
+button{background:#8b0000;color:white;border:none;font-weight:bold;cursor:pointer}
+button:hover{opacity:.9}
+.ok{color:green;font-weight:bold}
+.error{color:red;font-weight:bold}
+.info{background:#eee;padding:10px;border-radius:6px;margin-top:10px}
+.foto-preview{display:flex;flex-wrap:wrap}
+.foto-preview img{width:110px;height:110px;object-fit:cover;margin:5px;border-radius:8px;border:1px solid #ccc}
+.tag{display:inline-block;padding:6px 10px;margin:4px;border-radius:20px;background:#f2f2f2;border:1px solid #ccc;font-size:14px}
 </style>
 </head>
 
 <body>
 
-<header>
-Inspección Red Húmeda / Red Seca
-</header>
+<header>Inspección Red Húmeda / Red Seca</header>
 
 <div id="login">
-
   <div class="card">
-
     <h2>Ingreso operador</h2>
 
     <label>Usuario</label>
@@ -129,50 +38,31 @@ Inspección Red Húmeda / Red Seca
     <label>Clave</label>
     <input type="password" id="claveLogin">
 
-    <button onclick="login()">
-      Ingresar
-    </button>
+    <button onclick="login()">Ingresar</button>
 
     <p id="loginEstado"></p>
-
   </div>
-
 </div>
 
 <main id="app" style="display:none;">
 
   <div class="card">
-
     <h3>Datos operador</h3>
 
     <label>Operador</label>
     <input type="text" id="operador" readonly>
 
     <div id="adminPanelBtn" style="display:none;">
-      <button onclick="mostrarAdmin()">
-        Panel Administrador
-      </button>
+      <button onclick="mostrarAdmin()">Panel Administrador</button>
     </div>
 
     <label>Proyecto</label>
-
-    <select
-      id="proyecto"
-      onchange="cargarTorres(); cargarPuntos();"
-    >
-      <option value="">
-        Seleccione proyecto
-      </option>
+    <select id="proyecto" onchange="cargarTorres(); cargarPuntos();">
+      <option value="">Seleccione proyecto</option>
     </select>
-
   </div>
 
-  <div
-    class="card"
-    id="adminPanel"
-    style="display:none;"
-  >
-
+  <div class="card" id="adminPanel" style="display:none;">
     <h2>Administrador</h2>
 
     <label>Nombre proyecto</label>
@@ -182,43 +72,26 @@ Inspección Red Húmeda / Red Seca
     <input type="text" id="adminDireccion">
 
     <label>Torres</label>
-
-    <textarea
-      id="adminTorresTexto"
-      placeholder="Ejemplo:
+    <textarea id="adminTorresTexto" placeholder="Ejemplo:
 Torre Pacífico|18
-Torre Bahía|22"
-    ></textarea>
+Torre Bahía|22"></textarea>
 
-    <button onclick="crearProyectoAutomatico()">
-      Crear proyecto
-    </button>
+    <button onclick="crearProyectoAutomatico()">Crear proyecto</button>
 
     <p id="adminEstado"></p>
-
   </div>
 
   <div class="card">
-
     <h3>Agregar punto</h3>
 
     <label>Torre</label>
-
-    <select
-      id="torre"
-      onchange="cargarNiveles()"
-    >
-      <option value="">
-        Seleccione torre
-      </option>
+    <select id="torre" onchange="cargarNiveles()">
+      <option value="">Seleccione torre</option>
     </select>
 
-    <button onclick="generarInformeTorre()">
-      Generar informe de torre
-    </button>
+    <button onclick="generarInformeTorre()">Generar informe de torre</button>
 
     <label>Sector</label>
-
     <select id="sector">
       <option>Ala Norte</option>
       <option>Ala Sur</option>
@@ -228,125 +101,71 @@ Torre Bahía|22"
     </select>
 
     <label>Nivel</label>
-
     <select id="nivel">
-      <option value="">
-        Seleccione nivel
-      </option>
+      <option value="">Seleccione nivel</option>
     </select>
 
     <label>Sistema</label>
-
     <select id="sistema">
       <option>Red Húmeda</option>
       <option>Red Seca</option>
     </select>
 
     <label>Descripción</label>
+    <input type="text" id="descripcionPunto" placeholder="Ej: Gabinete escala norte">
 
-    <input
-      type="text"
-      id="descripcionPunto"
-      placeholder="Ej: Gabinete escala norte"
-    >
-
-    <button onclick="agregarPunto()">
-      Agregar punto
-    </button>
+    <button onclick="agregarPunto()">Agregar punto</button>
 
     <p id="estadoPunto"></p>
-
   </div>
 
   <div class="card">
-
     <h3>Punto a inspeccionar</h3>
 
     <label>Punto</label>
-
-    <select
-      id="punto"
-      onchange="mostrarDatosPunto()"
-    >
-      <option value="">
-        Seleccione punto
-      </option>
+    <select id="punto" onchange="mostrarDatosPunto()">
+      <option value="">Seleccione punto</option>
     </select>
 
     <div id="datosPunto"></div>
-
   </div>
 
   <div class="card">
-
     <h3>Aspectos a revisar</h3>
-
-    <div id="recordatorioSistema">
-      Seleccione un punto.
-    </div>
-
+    <div id="recordatorioSistema">Seleccione un punto.</div>
   </div>
 
   <div class="card">
-
     <h3>Resultado inspección</h3>
 
     <label>Estado general</label>
-
     <select id="cumple">
       <option>Se realiza inspeccion</option>
       <option>No se realiza inspeccion</option>
     </select>
 
     <label>Observaciones relevantes</label>
-
-    <textarea
-      id="observacion"
-      placeholder="Describa daños, fugas, corrosión, obstrucciones, señalética, etc."
-    ></textarea>
-
+    <textarea id="observacion" placeholder="Describa daños, fugas, corrosión, obstrucciones, señalética, etc."></textarea>
   </div>
 
   <div class="card">
-
     <h3>Evidencia fotográfica</h3>
 
     <label>Adjuntar fotografías</label>
+    <input type="file" id="fotoGaleria" accept="image/*" multiple onchange="previsualizarFotos()">
 
-    <input
-      type="file"
-      id="fotoGaleria"
-      accept="image/*"
-      multiple
-      onchange="previsualizarFotos()"
-    >
-
-    <div
-      class="foto-preview"
-      id="preview"
-    ></div>
-
+    <div class="foto-preview" id="preview"></div>
   </div>
 
   <div class="card">
-
-    <button
-      id="btnGuardar"
-      onclick="guardarInspeccion()"
-    >
-      Guardar inspección
-    </button>
-
+    <button id="btnGuardar" onclick="guardarInspeccion()">Guardar inspección</button>
     <p id="estado"></p>
-
   </div>
 
 </main>
 
 <script>
-
-const API_URL =
-"https://script.google.com/macros/s/AKfycbyNGXN34OO92XaadQADcaYa7qRF5oBFhWCAWNzrbYEeENRRuYI0Q4HfxdmDSdBjNKpaJw/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbyNGXN34OO92XaadQADcaYa7qRF5oBFhWCAWNzrbYEeENRRuYI0Q4HfxdmDSdBjNKpaJw/exec";
 
 let proyectos = [];
 let puntos = [];
@@ -354,393 +173,259 @@ let torresProyecto = [];
 let usuarioActual = null;
 
 function mostrarAdmin(){
-
-  const panel =
-    document.getElementById(
-      "adminPanel"
-    );
-
-  panel.style.display =
-
-    panel.style.display === "none"
-    ? "block"
-    : "none";
-
+  const panel = document.getElementById("adminPanel");
+  panel.style.display = panel.style.display === "none" ? "block" : "none";
 }
 
 async function login(){
-
-  const usuario =
-    document.getElementById(
-      "usuarioLogin"
-    ).value.trim();
-
-  const clave =
-    document.getElementById(
-      "claveLogin"
-    ).value.trim();
-
-  const estado =
-    document.getElementById(
-      "loginEstado"
-    );
+  const usuario = document.getElementById("usuarioLogin").value.trim();
+  const clave = document.getElementById("claveLogin").value.trim();
+  const estado = document.getElementById("loginEstado");
 
   try{
+    const res = await fetch(
+      API_URL +
+      "?op=login&usuario=" + encodeURIComponent(usuario) +
+      "&clave=" + encodeURIComponent(clave)
+    );
 
-    const res =
-      await fetch(
+    const data = await res.json();
 
-        API_URL
-        +
-        "?op=login&usuario="
-        +
-        encodeURIComponent(usuario)
-        +
-        "&clave="
-        +
-        encodeURIComponent(clave)
+    if(!data.ok) throw new Error(data.msg);
 
-      );
+    usuarioActual = data.usuario;
 
-    const data =
-      await res.json();
+    document.getElementById("login").style.display = "none";
+    document.getElementById("app").style.display = "block";
+    document.getElementById("operador").value = data.usuario.Nombre;
 
-    if(!data.ok)
-      throw new Error(
-        data.msg
-      );
-
-    usuarioActual =
-      data.usuario;
-
-    document.getElementById(
-      "login"
-    ).style.display = "none";
-
-    document.getElementById(
-      "app"
-    ).style.display = "block";
-
-    document.getElementById(
-      "operador"
-    ).value =
-      data.usuario.Nombre;
-
-    if(
-      data.usuario.Rol === "admin"
-    ){
-
-      document.getElementById(
-        "adminPanelBtn"
-      ).style.display = "block";
-
+    if(data.usuario.Rol === "admin"){
+      document.getElementById("adminPanelBtn").style.display = "block";
     }
 
     cargarProyectos();
 
   }catch(err){
-
-    estado.innerHTML =
-
-      `<span class="error">
-        ${err.message}
-      </span>`;
-
+    estado.innerHTML = `<span class="error">${err.message}</span>`;
   }
-
 }
 
 async function cargarProyectos(){
+  const select = document.getElementById("proyecto");
 
-  const select =
-    document.getElementById(
-      "proyecto"
-    );
+  const res = await fetch(API_URL + "?op=proyectos");
+  const data = await res.json();
 
-  const res =
-    await fetch(
-      API_URL + "?op=proyectos"
-    );
+  proyectos = data.proyectos;
 
-  const data =
-    await res.json();
-
-  proyectos =
-    data.proyectos;
-
-  select.innerHTML =
-    '<option value="">Seleccione proyecto</option>';
+  select.innerHTML = '<option value="">Seleccione proyecto</option>';
 
   proyectos.forEach(p=>{
-
-    select.innerHTML +=
-
-      `<option value="${p.ID}">
-        ${p.Nombre}
-      </option>`;
-
+    select.innerHTML += `<option value="${p.ID}">${p.Nombre}</option>`;
   });
-
 }
 
 async function cargarTorres(){
+  const proyectoID = document.getElementById("proyecto").value;
+  const torreSelect = document.getElementById("torre");
+  const nivelSelect = document.getElementById("nivel");
 
-  const proyectoID =
-    document.getElementById(
-      "proyecto"
-    ).value;
+  torreSelect.innerHTML = '<option value="">Seleccione torre</option>';
+  nivelSelect.innerHTML = '<option value="">Seleccione nivel</option>';
 
-  const torreSelect =
-    document.getElementById(
-      "torre"
-    );
+  if(!proyectoID) return;
 
-  const nivelSelect =
-    document.getElementById(
-      "nivel"
-    );
+  const res = await fetch(
+    API_URL +
+    "?op=torres&proyectoID=" +
+    encodeURIComponent(proyectoID)
+  );
 
-  torreSelect.innerHTML =
-    '<option value="">Seleccione torre</option>';
+  const data = await res.json();
 
-  nivelSelect.innerHTML =
-    '<option value="">Seleccione nivel</option>';
-
-  if(!proyectoID)
-    return;
-
-  const res =
-    await fetch(
-
-      API_URL
-      +
-      "?op=torres&proyectoID="
-      +
-      encodeURIComponent(
-        proyectoID
-      )
-
-    );
-
-  const data =
-    await res.json();
-
-  torresProyecto =
-    data.torres;
+  torresProyecto = data.torres;
 
   torresProyecto.forEach(t=>{
-
-    torreSelect.innerHTML +=
-
-      `<option value="${t.Nombre}">
-        ${t.Nombre}
-      </option>`;
-
+    torreSelect.innerHTML += `<option value="${t.Nombre}">${t.Nombre}</option>`;
   });
-
 }
 
 function cargarNiveles(){
+  const torreNombre = document.getElementById("torre").value;
+  const nivelSelect = document.getElementById("nivel");
 
-  const torreNombre =
-    document.getElementById(
-      "torre"
-    ).value;
+  nivelSelect.innerHTML = '<option value="">Seleccione nivel</option>';
 
-  const nivelSelect =
-    document.getElementById(
-      "nivel"
-    );
+  const torre = torresProyecto.find(t => t.Nombre === torreNombre);
 
-  nivelSelect.innerHTML =
-    '<option value="">Seleccione nivel</option>';
+  if(!torre) return;
 
-  const torre =
-    torresProyecto.find(
-      t => t.Nombre === torreNombre
-    );
+  const pisos = parseInt(torre.Pisos);
 
-  if(!torre)
-    return;
-
-  const pisos =
-    parseInt(torre.Pisos);
-
-  for(let i=1;i<=pisos;i++){
-
-    nivelSelect.innerHTML +=
-
-      `<option>
-        Piso ${i}
-      </option>`;
-
+  for(let i=1; i<=pisos; i++){
+    nivelSelect.innerHTML += `<option>Piso ${i}</option>`;
   }
 
   nivelSelect.innerHTML += `
-
-    <option>
-      Subterráneo -1
-    </option>
-
-    <option>
-      Subterráneo -2
-    </option>
-
-    <option>
-      Azotea
-    </option>
-
+    <option>Subterráneo -1</option>
+    <option>Subterráneo -2</option>
+    <option>Azotea</option>
   `;
-
 }
 
 async function cargarPuntos(){
+  const proyectoID = document.getElementById("proyecto").value;
+  const select = document.getElementById("punto");
 
-  const proyectoID =
-    document.getElementById(
-      "proyecto"
-    ).value;
+  select.innerHTML = '<option value="">Seleccione punto</option>';
 
-  const select =
-    document.getElementById(
-      "punto"
-    );
+  if(!proyectoID) return;
 
-  select.innerHTML =
-    '<option value="">Seleccione punto</option>';
+  const res = await fetch(
+    API_URL +
+    "?op=puntos&proyectoID=" +
+    encodeURIComponent(proyectoID)
+  );
 
-  if(!proyectoID)
-    return;
+  const data = await res.json();
 
-  const res =
-    await fetch(
-
-      API_URL
-      +
-      "?op=puntos&proyectoID="
-      +
-      encodeURIComponent(
-        proyectoID
-      )
-
-    );
-
-  const data =
-    await res.json();
-
-  puntos =
-    data.puntos;
+  puntos = data.puntos;
 
   puntos.forEach(p=>{
+    select.innerHTML += `
+      <option value="${p.ID}">
+        ${p.Codigo} - ${p.Torre} - ${p.Sector} - ${p.Nivel}
+      </option>
+    `;
+  });
+}
 
-    select.innerHTML +=
+async function crearProyectoAutomatico(){
+  const nombre = document.getElementById("adminNombreProyecto").value.trim();
+  const direccion = document.getElementById("adminDireccion").value.trim();
+  const texto = document.getElementById("adminTorresTexto").value;
+  const estado = document.getElementById("adminEstado");
 
-      `<option value="${p.ID}">
-        ${p.Codigo}
-        -
-        ${p.Torre}
-        -
-        ${p.Sector}
-        -
-        ${p.Nivel}
-      </option>`;
+  const torres = [];
 
+  texto.split("\n").forEach(linea => {
+    const partes = linea.split("|");
+    if(partes.length >= 2){
+      torres.push({
+        nombre: partes[0].trim(),
+        pisos: parseInt(partes[1].trim())
+      });
+    }
   });
 
+  if(!nombre || torres.length === 0){
+    estado.innerHTML = `<span class="error">Ingrese nombre del proyecto y torres.</span>`;
+    return;
+  }
+
+  const payload = {
+    op: "crearProyectoAutomatico",
+    nombre,
+    direccion,
+    torres
+  };
+
+  try{
+    const res = await fetch(API_URL,{
+      method:"POST",
+      body:JSON.stringify(payload)
+    });
+
+    const data = await res.json();
+
+    if(data.ok){
+      estado.innerHTML = `<span class="ok">Proyecto creado correctamente. Torres: ${data.torres}</span>`;
+      cargarProyectos();
+    }else{
+      throw new Error(data.msg || "Error al crear proyecto.");
+    }
+
+  }catch(err){
+    estado.innerHTML = `<span class="error">${err.message}</span>`;
+  }
+}
+
+async function agregarPunto(){
+  const proyectoID = document.getElementById("proyecto").value;
+  const torre = document.getElementById("torre").value;
+  const sector = document.getElementById("sector").value;
+  const nivel = document.getElementById("nivel").value;
+  const sistema = document.getElementById("sistema").value;
+  const descripcion = document.getElementById("descripcionPunto").value;
+  const estado = document.getElementById("estadoPunto");
+
+  if(!proyectoID || !torre || !nivel){
+    estado.innerHTML = `<span class="error">Seleccione proyecto, torre y nivel.</span>`;
+    return;
+  }
+
+  try{
+    const payload = {
+      op:"agregarPunto",
+      proyectoID,
+      torre,
+      sector,
+      nivel,
+      sistema,
+      descripcion
+    };
+
+    const res = await fetch(API_URL,{
+      method:"POST",
+      body:JSON.stringify(payload)
+    });
+
+    const data = await res.json();
+
+    if(data.ok){
+      estado.innerHTML = `<span class="ok">Punto creado: ${data.codigo}</span>`;
+      document.getElementById("descripcionPunto").value = "";
+      cargarPuntos();
+    }else{
+      throw new Error(data.msg || "Error al agregar punto.");
+    }
+
+  }catch(err){
+    estado.innerHTML = `<span class="error">${err.message}</span>`;
+  }
 }
 
 function mostrarDatosPunto(){
-
-  const puntoID =
-    document.getElementById(
-      "punto"
-    ).value;
-
-  const p =
-    puntos.find(
-      x => String(x.ID) === String(puntoID)
-    );
+  const puntoID = document.getElementById("punto").value;
+  const p = puntos.find(x => String(x.ID) === String(puntoID));
 
   if(!p){
-
-    document.getElementById(
-      "datosPunto"
-    ).innerHTML = "";
-
-    document.getElementById(
-      "recordatorioSistema"
-    ).innerHTML =
-      "Seleccione un punto.";
-
+    document.getElementById("datosPunto").innerHTML = "";
+    document.getElementById("recordatorioSistema").innerHTML = "Seleccione un punto.";
     return;
-
   }
 
-  document.getElementById(
-    "datosPunto"
-  ).innerHTML = `
-
+  document.getElementById("datosPunto").innerHTML = `
     <div class="info">
-
-      <p>
-        <strong>Torre:</strong>
-        ${p.Torre}
-      </p>
-
-      <p>
-        <strong>Sector:</strong>
-        ${p.Sector}
-      </p>
-
-      <p>
-        <strong>Nivel:</strong>
-        ${p.Nivel}
-      </p>
-
-      <p>
-        <strong>Sistema:</strong>
-        ${p.Sistema}
-      </p>
-
-      <p>
-        <strong>Código:</strong>
-        ${p.Codigo}
-      </p>
-
-      <p>
-        <strong>Descripción:</strong>
-        ${p.Descripcion}
-      </p>
-
+      <p><strong>Torre:</strong> ${p.Torre}</p>
+      <p><strong>Sector:</strong> ${p.Sector}</p>
+      <p><strong>Nivel:</strong> ${p.Nivel}</p>
+      <p><strong>Sistema:</strong> ${p.Sistema}</p>
+      <p><strong>Código:</strong> ${p.Codigo}</p>
+      <p><strong>Descripción:</strong> ${p.Descripcion}</p>
     </div>
-
   `;
 
-  mostrarRecordatorio(
-    p.Sistema
-  );
-
+  mostrarRecordatorio(p.Sistema);
 }
 
 function mostrarRecordatorio(sistema){
+  const div = document.getElementById("recordatorioSistema");
 
-  const div =
-    document.getElementById(
-      "recordatorioSistema"
-    );
-
-  if(
-    sistema.includes("Húmeda")
-  ){
-
+  if(sistema.includes("Húmeda")){
     div.innerHTML = `
-
       <div class="info">
-
-        <h4>
-          Red Húmeda
-        </h4>
-
+        <h4>Red Húmeda</h4>
         <span class="tag">Gabinete</span>
         <span class="tag">Manguera</span>
         <span class="tag">Pitón</span>
@@ -749,257 +434,112 @@ function mostrarRecordatorio(sistema){
         <span class="tag">Corrosión</span>
         <span class="tag">Presión</span>
         <span class="tag">Acceso</span>
-
       </div>
-
     `;
-
   }else{
-
     div.innerHTML = `
-
       <div class="info">
-
-        <h4>
-          Red Seca
-        </h4>
-
+        <h4>Red Seca</h4>
         <span class="tag">Conexión Bomberos</span>
         <span class="tag">Tapas</span>
         <span class="tag">Válvulas</span>
         <span class="tag">Fugas</span>
         <span class="tag">Corrosión</span>
         <span class="tag">Acceso</span>
-
       </div>
-
     `;
-
   }
-
 }
 
 function obtenerArchivosFotos(){
-
-  return Array.from(
-
-    document.getElementById(
-      "fotoGaleria"
-    ).files
-
-  );
-
+  return Array.from(document.getElementById("fotoGaleria").files);
 }
 
 function previsualizarFotos(){
-
-  const files =
-    obtenerArchivosFotos();
-
-  const preview =
-    document.getElementById(
-      "preview"
-    );
+  const files = obtenerArchivosFotos();
+  const preview = document.getElementById("preview");
 
   preview.innerHTML = "";
 
   files.forEach(file => {
-
-    const img =
-      document.createElement("img");
-
-    img.src =
-      URL.createObjectURL(file);
-
+    const img = document.createElement("img");
+    img.src = URL.createObjectURL(file);
     preview.appendChild(img);
-
   });
-
 }
 
 function archivoABase64(file){
-
   return new Promise((resolve,reject)=>{
-
-    const reader =
-      new FileReader();
-
-    reader.onload =
-      () => resolve(reader.result);
-
-    reader.onerror =
-      reject;
-
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
     reader.readAsDataURL(file);
-
   });
-
 }
 
 async function guardarInspeccion(){
-
-  const puntoID =
-    document.getElementById(
-      "punto"
-    ).value;
-
-  const punto =
-    puntos.find(
-      x => String(x.ID) === String(puntoID)
-    );
-
-  const estado =
-    document.getElementById(
-      "estado"
-    );
-
-  const btn =
-    document.getElementById(
-      "btnGuardar"
-    );
+  const puntoID = document.getElementById("punto").value;
+  const punto = puntos.find(x => String(x.ID) === String(puntoID));
+  const estado = document.getElementById("estado");
+  const btn = document.getElementById("btnGuardar");
 
   if(!punto){
-
-    estado.innerHTML =
-
-      `<span class="error">
-        Seleccione un punto.
-      </span>`;
-
+    estado.innerHTML = `<span class="error">Seleccione un punto.</span>`;
     return;
-
   }
 
   btn.disabled = true;
-
-  btn.textContent =
-    "Guardando...";
-
-  estado.innerHTML =
-    "Procesando fotografías...";
+  btn.textContent = "Guardando...";
+  estado.innerHTML = "Procesando fotografías...";
 
   try{
-
     const fotos = [];
 
-    for(
-      const file of obtenerArchivosFotos()
-    ){
-
+    for(const file of obtenerArchivosFotos()){
       fotos.push({
-
         nombre:file.name,
-
-        base64:
-          await archivoABase64(file)
-
+        base64:await archivoABase64(file)
       });
-
     }
 
     const payload = {
-
       op:"guardarInspeccion",
-
-      proyectoID:
-        document.getElementById(
-          "proyecto"
-        ).value,
-
+      proyectoID:document.getElementById("proyecto").value,
       puntoID,
-
-      operador:
-        document.getElementById(
-          "operador"
-        ).value,
-
-      sistema:
-        punto.Sistema,
-
-      cumple:
-        document.getElementById(
-          "cumple"
-        ).value,
-
+      operador:document.getElementById("operador").value,
+      sistema:punto.Sistema,
+      cumple:document.getElementById("cumple").value,
       criticidad:"",
-
-      observacion:
-        document.getElementById(
-          "observacion"
-        ).value,
-
-      estadoOperativo:
-        document.getElementById(
-          "cumple"
-        ).value,
-
+      observacion:document.getElementById("observacion").value,
+      estadoOperativo:document.getElementById("cumple").value,
       fotos
-
     };
 
-    const res =
-      await fetch(API_URL,{
+    const res = await fetch(API_URL,{
+      method:"POST",
+      body:JSON.stringify(payload)
+    });
 
-        method:"POST",
-
-        body:JSON.stringify(
-          payload
-        )
-
-      });
-
-    const data =
-      await res.json();
+    const data = await res.json();
 
     if(data.ok){
-
-      estado.innerHTML =
-
-        `<span class="ok">
-          Inspección guardada correctamente.
-        </span>`;
-
-      document.getElementById(
-        "fotoGaleria"
-      ).value = "";
-
-      document.getElementById(
-        "preview"
-      ).innerHTML = "";
-
-      document.getElementById(
-        "observacion"
-      ).value = "";
-
+      estado.innerHTML = `<span class="ok">Inspección guardada correctamente.</span>`;
+      document.getElementById("fotoGaleria").value = "";
+      document.getElementById("preview").innerHTML = "";
+      document.getElementById("observacion").value = "";
       cargarPuntos();
-
     }else{
-
-      throw new Error(
-
-        data.msg ||
-        "Error al guardar."
-
-      );
-
+      throw new Error(data.msg || "Error al guardar.");
     }
 
   }catch(err){
-
-    estado.innerHTML =
-
-      `<span class="error">
-        ${err.message}
-      </span>`;
-
+    estado.innerHTML = `<span class="error">${err.message}</span>`;
   }
 
   btn.disabled = false;
-
-  btn.textContent =
-    "Guardar inspección";
-
+  btn.textContent = "Guardar inspección";
 }
+
 async function generarInformeTorre(){
   const proyectoID = document.getElementById("proyecto").value;
   const torre = document.getElementById("torre").value;
@@ -1143,136 +683,18 @@ async function generarInformeTorre(){
   </html>
   `;
 
-const ventana = window.open("", "_blank");
+  const ventana = window.open("", "_blank");
 
-if(!ventana){
-  alert("El navegador bloqueó la ventana emergente. Permite pop-ups para esta página e intenta nuevamente.");
-  return;
-}
-
-ventana.document.open();
-ventana.document.write(html);
-ventana.document.close();
-
-  async function agregarPunto(){
-
-  const proyectoID =
-    document.getElementById(
-      "proyecto"
-    ).value;
-
-  const torre =
-    document.getElementById(
-      "torre"
-    ).value;
-
-  const sector =
-    document.getElementById(
-      "sector"
-    ).value;
-
-  const nivel =
-    document.getElementById(
-      "nivel"
-    ).value;
-
-  const sistema =
-    document.getElementById(
-      "sistema"
-    ).value;
-
-  const descripcion =
-    document.getElementById(
-      "descripcionPunto"
-    ).value;
-
-  const estado =
-    document.getElementById(
-      "estadoPunto"
-    );
-
-  if(
-    !proyectoID
-    ||
-    !torre
-    ||
-    !nivel
-  ){
-
-    estado.innerHTML =
-
-      `<span class="error">
-        Seleccione proyecto, torre y nivel.
-      </span>`;
-
+  if(!ventana){
+    alert("El navegador bloqueó la ventana emergente. Permite pop-ups para esta página e intenta nuevamente.");
     return;
-
   }
 
-  try{
-
-    const payload = {
-
-      op:"agregarPunto",
-
-      proyectoID,
-      torre,
-      sector,
-      nivel,
-      sistema,
-      descripcion
-
-    };
-
-    const res =
-      await fetch(API_URL,{
-
-        method:"POST",
-
-        body:JSON.stringify(
-          payload
-        )
-
-      });
-
-    const data =
-      await res.json();
-
-    if(data.ok){
-
-      estado.innerHTML =
-
-        `<span class="ok">
-          Punto creado:
-          ${data.codigo}
-        </span>`;
-
-      document.getElementById(
-        "descripcionPunto"
-      ).value = "";
-
-      cargarPuntos();
-
-    }else{
-
-      throw new Error(
-        data.msg
-      );
-
-    }
-
-  }catch(err){
-
-    estado.innerHTML =
-
-      `<span class="error">
-        ${err.message}
-      </span>`;
-
-  }
-
-}
+  ventana.document.open();
+  ventana.document.write(html);
+  ventana.document.close();
 }
 </script>
+
 </body>
 </html>
