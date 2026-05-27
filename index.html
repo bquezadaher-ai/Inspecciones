@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Inspección RH/RS</title>
- 
+
 <style>
 body{font-family:Arial,sans-serif;margin:0;background:#f2f2f2}
 header{background:#8b0000;color:white;padding:15px;text-align:center;font-weight:bold;font-size:20px}
@@ -14,11 +14,11 @@ label{font-weight:bold;display:block;margin-top:12px}
 input,select,textarea,button{width:100%;padding:10px;margin-top:6px;border-radius:6px;border:1px solid #ccc;box-sizing:border-box}
 textarea{min-height:120px}
 button{background:#8b0000;color:white;border:none;font-weight:bold;cursor:pointer}
-.item{border-bottom:1px solid #ddd;padding:10px 0}
 .ok{color:green;font-weight:bold}
 .error{color:red;font-weight:bold}
 .info{background:#eee;padding:10px;border-radius:6px;margin-top:10px}
 .foto-preview img{max-width:100px;margin:5px;border-radius:6px}
+.tag{display:inline-block;background:#f2f2f2;border:1px solid #ccc;border-radius:20px;padding:6px 10px;margin:4px;font-size:14px}
 </style>
 </head>
 
@@ -42,7 +42,6 @@ button{background:#8b0000;color:white;border:none;font-weight:bold;cursor:pointe
 
   <div class="card">
     <h3>Datos operador</h3>
-
     <label>Operador</label>
     <input type="text" id="operador" readonly>
 
@@ -124,8 +123,31 @@ Torre Mirador|12"></textarea>
   </div>
 
   <div class="card">
-    <h3>Checklist técnico</h3>
-    <div id="checklistContainer"></div>
+    <h3>Aspectos a revisar</h3>
+    <div id="recordatorioSistema">Seleccione un punto.</div>
+  </div>
+
+  <div class="card">
+    <h3>Resultado inspección</h3>
+
+    <label>Estado general</label>
+    <select id="cumple">
+      <option>Conforme</option>
+      <option>Observación</option>
+      <option>No conforme</option>
+      <option>Crítico</option>
+    </select>
+
+    <label>Criticidad</label>
+    <select id="criticidad">
+      <option>Baja</option>
+      <option>Media</option>
+      <option>Alta</option>
+      <option>Crítica</option>
+    </select>
+
+    <label>Observaciones relevantes</label>
+    <textarea id="observacion" placeholder="Describa daños, fugas, obstrucciones, incumplimientos, riesgos, presión, corrosión, accesibilidad, señalética, etc."></textarea>
   </div>
 
   <div class="card">
@@ -140,11 +162,11 @@ Torre Mirador|12"></textarea>
       <option>Accesibilidad</option>
     </select>
 
-   <label>Tomar fotografía</label>
-<input type="file" id="fotoCamara" accept="image/*" capture="environment" onchange="previsualizarFotos()">
+    <label>Tomar fotografía</label>
+    <input type="file" id="fotoCamara" accept="image/*" capture="environment" onchange="previsualizarFotos()">
 
-<label>Adjuntar varias fotos</label>
-<input type="file" id="fotoGaleria" accept="image/*" multiple onchange="previsualizarFotos()">
+    <label>Adjuntar desde galería</label>
+    <input type="file" id="fotoGaleria" accept="image/*" multiple onchange="previsualizarFotos()">
 
     <div class="foto-preview" id="preview"></div>
   </div>
@@ -157,42 +179,12 @@ Torre Mirador|12"></textarea>
 </main>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbyNGXN34OO92XaadQADcaYa7qRF5oBFhWCAWNzrbYEeENRRuYI0Q4HfxdmDSdBjNKpaJw/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbytwovmrzY_xBQtKomuYJBFougHjtDh4-xRpy2CgrQMuxMUWlyvBDZesou-Y40Q7Fbo_g/exec";
 
 let proyectos = [];
 let puntos = [];
 let torresProyecto = [];
 let usuarioActual = null;
-
-const checklistRH = [
-  "¿Se cuenta con al menos 01 red húmeda por piso?",
-  "¿Se cuenta con coplas de 25 mm, 45 mm y/o 52 mm?",
-  "¿Las bocas de incendio poseen llave de salida de cierre rápido, válvula tipo bola o globo angular de 45°?",
-  "¿La manguera cuenta con su respectivo pitón?",
-  "¿Las mangueras son del tipo semirrígidas?",
-  "¿La red se encuentra conectada al sistema de distribución de agua del edificio?",
-  "Si la red está ubicada en espacios comunes, ¿el arranque y la manguera cuentan con nicho con puerta de vidrio?",
-  "¿Los gabinetes se encuentran despejados, con acceso expedito y con señalética?",
-  "¿El nicho se encuentra ubicado a una altura entre 0,6 m y 1,5 m sobre el nivel del piso?",
-  "Ante la prueba de apertura, ¿la red húmeda funciona adecuadamente?",
-  "¿Se aprecia estado general de la red húmeda en buenas condiciones? Ej: óxido, grietas, fisuras, fugas, etc."
-];
-
-const checklistRS = [
-  "¿Se cuenta con red seca en el edificio?",
-  "¿La red seca posee conexión de alimentación exterior para Bomberos?",
-  "¿La conexión exterior es visible, accesible y está debidamente señalizada?",
-  "¿La conexión exterior cuenta con tapas y cadenas en buen estado?",
-  "¿La red seca posee válvulas de salida en cada piso?",
-  "¿Las válvulas de salida son del tipo globo angular 45° o equivalente?",
-  "¿Los diámetros de las salidas son compatibles con estándar Bomberos?",
-  "¿Las válvulas se encuentran en gabinetes o nichos protegidos y señalizados?",
-  "¿La red cuenta con sistema de drenaje o purga en su punto más bajo?",
-  "¿Las salidas están ubicadas en cajas de escala o zonas comunes seguras?",
-  "¿Las válvulas operan correctamente en apertura y cierre?",
-  "¿La red soporta presión de operación sin fugas, según prueba hidráulica?",
-  "¿Existe acceso adecuado para carros de Bomberos a la conexión exterior?"
-];
 
 function mostrarAdmin(){
   const panel = document.getElementById("adminPanel");
@@ -372,6 +364,7 @@ function mostrarDatosPunto(){
 
   if(!p){
     document.getElementById("datosPunto").innerHTML = "";
+    document.getElementById("recordatorioSistema").innerHTML = "Seleccione un punto.";
     return;
   }
 
@@ -387,47 +380,47 @@ function mostrarDatosPunto(){
     </div>
   `;
 
-  generarChecklist(p.Sistema);
+  mostrarRecordatorio(p.Sistema);
 }
 
-function generarChecklist(sistema){
-  const container = document.getElementById("checklistContainer");
-  const lista = sistema.includes("Húmeda") ? checklistRH : checklistRS;
+function mostrarRecordatorio(sistema){
+  const div = document.getElementById("recordatorioSistema");
 
-  let html = "";
-
-  lista.forEach((pregunta, i) => {
-    html += `
-      <div class="item">
-        <label>${i + 1}. ${pregunta}</label>
-        <select id="pregunta_${i}">
-          <option>Sí</option>
-          <option>No</option>
-          <option>N/A</option>
-        </select>
+  if(sistema.includes("Húmeda")){
+    div.innerHTML = `
+      <div class="info">
+        <h4>Red Húmeda - Revisar</h4>
+        <span class="tag">Gabinete</span>
+        <span class="tag">Manguera</span>
+        <span class="tag">Pitón</span>
+        <span class="tag">Válvula</span>
+        <span class="tag">Señalética</span>
+        <span class="tag">Acceso expedito</span>
+        <span class="tag">Fugas</span>
+        <span class="tag">Corrosión</span>
+        <span class="tag">Presión</span>
+        <span class="tag">Nicho / puerta</span>
+        <span class="tag">Altura normativa</span>
+        <span class="tag">Estado general</span>
       </div>
     `;
-  });
-
-  html += `
-    <label>Resultado general</label>
-    <select id="cumple">
-      <option>Cumple</option>
-      <option>No cumple</option>
-    </select>
-
-    <label>Criticidad</label>
-    <select id="criticidad">
-      <option>Baja</option>
-      <option>Alta</option>
-      <option>S/Riesgo</option>
-    </select>
-
-    <label>Observación general</label>
-    <textarea id="observacion"></textarea>
-  `;
-
-  container.innerHTML = html;
+  }else{
+    div.innerHTML = `
+      <div class="info">
+        <h4>Red Seca - Revisar</h4>
+        <span class="tag">Conexión Bomberos</span>
+        <span class="tag">Tapas y cadenas</span>
+        <span class="tag">Válvulas</span>
+        <span class="tag">Señalética</span>
+        <span class="tag">Accesibilidad</span>
+        <span class="tag">Fugas</span>
+        <span class="tag">Corrosión</span>
+        <span class="tag">Drenaje / purga</span>
+        <span class="tag">Compatibilidad conexiones</span>
+        <span class="tag">Estado general</span>
+      </div>
+    `;
+  }
 }
 
 function obtenerArchivosFotos(){
@@ -483,14 +476,9 @@ async function guardarInspeccion(){
       });
     }
 
-    const lista = punto.Sistema.includes("Húmeda") ? checklistRH : checklistRS;
-    let checklistTexto = "";
-
-    lista.forEach((pregunta,i)=>{
-      checklistTexto += `${i+1}. ${pregunta} => ${document.getElementById("pregunta_"+i).value}\n`;
-    });
-
-    checklistTexto += "\nObservación:\n" + document.getElementById("observacion").value;
+    const observacionTexto =
+      "Observación:\n" +
+      document.getElementById("observacion").value;
 
     const payload = {
       op: "guardarInspeccion",
@@ -500,8 +488,8 @@ async function guardarInspeccion(){
       sistema: punto.Sistema,
       cumple: document.getElementById("cumple").value,
       criticidad: document.getElementById("criticidad").value,
-      observacion: checklistTexto,
-      estadoOperativo: "Operativo",
+      observacion: observacionTexto,
+      estadoOperativo: document.getElementById("cumple").value,
       fotos
     };
 
@@ -530,82 +518,7 @@ async function guardarInspeccion(){
   btn.disabled = false;
   btn.textContent = "Guardar inspección";
 }
-function convertirChecklistATabla(texto){
 
-  const lineas = texto.split("\n");
-
-  let html = `
-    <table>
-      <tr>
-        <th>N°</th>
-        <th>Ítem</th>
-        <th>Resultado</th>
-      </tr>
-  `;
-
-  let observacion = "";
-  let leyendoObs = false;
-
-  lineas.forEach(linea => {
-
-    if(linea.startsWith("Observación:")){
-
-      leyendoObs = true;
-
-      return;
-    }
-
-    if(leyendoObs){
-
-      observacion += linea + "<br>";
-
-      return;
-    }
-
-    if(linea.includes("=>")){
-
-      const partes =
-        linea.split("=>");
-
-      const izquierda =
-        partes[0].trim();
-
-      const resultado =
-        partes[1].trim();
-
-      const numero =
-        izquierda.split(".")[0];
-
-      const item =
-        izquierda.substring(
-          izquierda.indexOf(".") + 1
-        ).trim();
-
-      html += `
-        <tr>
-          <td>${numero}</td>
-          <td>${item}</td>
-          <td>${resultado}</td>
-        </tr>
-      `;
-    }
-
-  });
-
-  html += `</table>`;
-
-  if(observacion.trim() !== ""){
-
-    html += `
-      <h4>Observación general</h4>
-
-      <p>${observacion}</p>
-    `;
-  }
-
-  return html;
-
-}
 async function generarInformeTorre(){
   const proyectoID = document.getElementById("proyecto").value;
   const torre = document.getElementById("torre").value;
@@ -679,8 +592,8 @@ async function generarInformeTorre(){
     </tr>
     <tr>
       <td>${registros.length}</td>
-      <td>${registros.filter(r => r.inspeccion.Cumple === "No cumple").length}</td>
-      <td>${registros.filter(r => r.inspeccion.Criticidad === "Crítica").length}</td>
+      <td>${registros.filter(r => r.inspeccion.Cumple === "No conforme").length}</td>
+      <td>${registros.filter(r => r.inspeccion.Cumple === "Crítico" || r.inspeccion.Criticidad === "Crítica").length}</td>
     </tr>
   </table>
   `;
@@ -712,21 +625,21 @@ async function generarInformeTorre(){
             <p><strong>Resultado:</strong> ${r.inspeccion.Cumple || ""}</p>
             <p><strong>Criticidad:</strong> ${r.inspeccion.Criticidad || ""}</p>
 
-            <h4>Checklist / Observaciones</h4>
-${convertirChecklistATabla(r.inspeccion.Observacion || "")}
+            <h4>Observaciones</h4>
+            <pre>${r.inspeccion.Observacion || ""}</pre>
 
             <h4>Fotografías</h4>
         `;
 
-        if(r.fotos.length === 0){
+        if(!r.fotos || r.fotos.length === 0){
           html += `<p>Sin fotografías adjuntas.</p>`;
         }
 
-        r.fotos.forEach(f => {
+        (r.fotos || []).forEach(f => {
           html += `
             <div>
               <p><strong>${f.TipoFoto || "Foto"}</strong></p>
-              <img class="foto" src="${f.URL}">
+              <img class="foto" src="${f.Base64 || f.URL}">
             </div>
           `;
         });
