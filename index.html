@@ -1143,9 +1143,16 @@ async function generarInformeTorre(){
   </html>
   `;
 
-  const ventana = window.open("", "_blank");
-  ventana.document.write(html);
-  ventana.document.close();
+const ventana = window.open("", "_blank");
+
+if(!ventana){
+  alert("El navegador bloqueó la ventana emergente. Permite pop-ups para esta página e intenta nuevamente.");
+  return;
+}
+
+ventana.document.open();
+ventana.document.write(html);
+ventana.document.close();
 }
 </script>
 </body>
