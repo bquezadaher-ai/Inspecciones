@@ -149,13 +149,16 @@ Torre Bahía|22"></textarea>
   </div>
 
   <div class="card">
-    <h3>Evidencia fotográfica</h3>
+  <h3>Evidencia fotográfica</h3>
 
-    <label>Adjuntar fotografías</label>
-    <input type="file" id="fotoGaleria" accept="image/*" multiple onchange="previsualizarFotos()">
+  <label>Tomar fotografía</label>
+  <input type="file" id="fotoCamara" accept="image/*" capture="environment" multiple onchange="previsualizarFotos()">
 
-    <div class="foto-preview" id="preview"></div>
-  </div>
+  <label>Adjuntar fotografías desde galería</label>
+  <input type="file" id="fotoGaleria" accept="image/*" multiple onchange="previsualizarFotos()">
+
+  <div class="foto-preview" id="preview"></div>
+</div>
 
   <div class="card">
     <button id="btnGuardar" onclick="guardarInspeccion()">Guardar inspección</button>
@@ -455,6 +458,42 @@ function obtenerArchivosFotos(){
   return Array.from(document.getElementById("fotoGaleria").files);
 }
 
+function obtenerArchivosFotos(){
+  const camara = Array.from(document.getElementById("fotoCamara").files);
+  const galeria = Array.from(document.getElementById("fotoGaleria").files);
+  return camara.concat(galeria);
+}
+
+function archivoABase64(file){
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const reader = new FileReader();
+
+    reader.onload = e => {
+      img.onload = () => {
+        const maxAncho = 1280;
+        const escala = Math.min(1, maxAncho / img.width);
+
+        const canvas = document.createElement("canvas");
+        canvas.width = img.width * escala;
+        canvas.height = img.height * escala;
+
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+        const base64 = canvas.toDataURL("image/jpeg", 0.72);
+        resolve(base64);
+      };
+
+      img.onerror = reject;
+      img.src = e.target.result;
+    };
+
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
 function previsualizarFotos(){
   const files = obtenerArchivosFotos();
   const preview = document.getElementById("preview");
@@ -465,15 +504,6 @@ function previsualizarFotos(){
     const img = document.createElement("img");
     img.src = URL.createObjectURL(file);
     preview.appendChild(img);
-  });
-}
-
-function archivoABase64(file){
-  return new Promise((resolve,reject)=>{
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
   });
 }
 
@@ -524,13 +554,17 @@ async function guardarInspeccion(){
 
     if(data.ok){
       estado.innerHTML = `<span class="ok">Inspección guardada correctamente.</span>`;
+      document.getElementById("fotoCamara").value = "";
       document.getElementById("fotoGaleria").value = "";
       document.getElementById("preview").innerHTML = "";
       document.getElementById("observacion").value = "";
-      cargarPuntos();
-    }else{
+
+      if(punto){
+        punto.Estado = "Revisado";
+      }
+      }else{
       throw new Error(data.msg || "Error al guardar.");
-    }
+      }
 
   }catch(err){
     estado.innerHTML = `<span class="error">${err.message}</span>`;
