@@ -625,8 +625,10 @@ async function generarInformeTorre(){
   padding:15px;
   margin-top:10px;
 
-  break-inside:auto;
-  page-break-inside:auto;
+  break-inside:avoid;
+  page-break-inside:avoid;
+
+  display:block;
 }
       .foto{max-width:230px;margin:8px;border:1px solid #999}
       pre{white-space:pre-wrap;font-family:Arial,sans-serif}
@@ -650,6 +652,24 @@ table{
 
 tr{
   page-break-inside:avoid;
+}
+@media print{
+
+  .registro{
+    break-inside:avoid;
+    page-break-inside:avoid;
+  }
+
+  .nivel{
+    break-after:auto;
+    page-break-after:auto;
+  }
+
+  img{
+    break-inside:avoid;
+    page-break-inside:avoid;
+  }
+
 }
     </style>
   </head>
