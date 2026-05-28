@@ -455,10 +455,6 @@ function mostrarRecordatorio(sistema){
 }
 
 function obtenerArchivosFotos(){
-  return Array.from(document.getElementById("fotoGaleria").files);
-}
-
-function obtenerArchivosFotos(){
   const camara = Array.from(document.getElementById("fotoCamara").files);
   const galeria = Array.from(document.getElementById("fotoGaleria").files);
   return camara.concat(galeria);
@@ -562,6 +558,7 @@ async function guardarInspeccion(){
       if(punto){
         punto.Estado = "Revisado";
       }
+      
       }else{
       throw new Error(data.msg || "Error al guardar.");
       }
